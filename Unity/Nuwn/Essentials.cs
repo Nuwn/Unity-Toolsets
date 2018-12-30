@@ -9,8 +9,7 @@ namespace Nuwn
         public class Essentials : MonoBehaviour
         {
             /// <summary>
-            /// Checks whether the target position is in screen view,
-            /// 
+            /// Checks whether the target position is in screen view
             /// </summary>
             /// <param name="Position">The target position like target.position</param>
             /// <param name="cam">Camera...</param>
@@ -25,7 +24,6 @@ namespace Nuwn
                 else
                     return false;
             }
-
             /// <summary>
             /// Array randomizer, insert ex.
             /// Randomizer(0, array.length)
@@ -78,11 +76,7 @@ namespace Nuwn
                     }
                 }
                 return res;
-            }
-
-
-
-            
+            }      
         }
         public class Instanciating : MonoBehaviour
         {
@@ -92,34 +86,32 @@ namespace Nuwn
             /// </summary>
             /// <typeparam name="T"></typeparam>
             /// <param name="prefab"></param>
-            /// <param name="startPos"></param>
-            /// <param name="startRot"></param>
-            /// <param name="parent"></param>
-            /// <param name="child"></param>
+            /// <param name="startPos">Start Position</param>
+            /// <param name="startRot">Start Rotation</param>
+            /// <param name="parent">Ignore or set as null to not have a parent</param>
+            /// <param name="child">True if you want to search thru childs</param>
             /// <returns></returns>
             public T Create<T>(GameObject prefab, Vector3 startPos, Quaternion startRot, Transform parent = null, bool child = false)
             {
                 GameObject newObject = Instantiate(prefab, startPos, startRot, parent) as GameObject;
 
-                T yourObject;
-                if (!child)
-                {
-                    yourObject = newObject.GetComponent<T>();
-                }
-                else
-                {
-                    yourObject = newObject.GetComponentInChildren<T>();
-                }
-
+                T yourObject = (child) ? newObject.GetComponentInChildren<T>() : newObject.GetComponent<T>(); ;
+                
                 return yourObject;
             }
         }
         public class Colliders : MonoBehaviour
         {
+            /// <summary>
+            /// Set and ignore on colliders 1 and 2.
+            /// </summary>
+            /// <param name="col1">First Collider</param>
+            /// <param name="col2">Second Collider</param>
+            /// <param name="ignore">Set false to remove the ignore</param>
             public static void IgnoreCollision(Collider col1, Collider col2, bool ignore)
             {
                 Physics.IgnoreCollision(col1, col2, ignore);
             }
-        }
+        }  
     }
 }
