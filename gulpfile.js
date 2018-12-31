@@ -25,3 +25,11 @@ gulp.task('mincss', function() {
     .pipe(cleanCSS({compatibility: '*'}))
     .pipe(gulp.dest('./css'));
 });
+
+gulp.task('watch_c#', function(){
+    gulp.watch('../FloorIsLiterallyLava/Assets/Nuwn/*.cs', ['C#']); 
+})
+gulp.task('C#', function () {
+  return gulp.src('../FloorIsLiterallyLava/Assets/Nuwn/*.cs')
+    .pipe(gulp.dest('./Unity/Nuwn'));
+});
