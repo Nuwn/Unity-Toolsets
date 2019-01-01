@@ -115,25 +115,5 @@ namespace Nuwn
                 Physics.IgnoreCollision(col1, col2, ignore);
             }
         }  
-        public class Timers : MonoBehaviour
-        {
-            public void Debugger(float waitTime, Action<bool> Callback = null)
-            {
-                StartCoroutine(Wait(5, (result) => Callback?.Invoke(true)));
-            }
-            IEnumerator Wait(float duration, Action<bool> Callback = null)
-            {
-                yield return new WaitForSeconds(duration);
-                Callback?.Invoke(true);
-            }
-
-            public void n_Debugger(float waitTime = 1, Action<bool> Callback = null)
-            {
-                var timer = new Timer(waitTime);
-                timer.Elapsed += (s, e) => { Callback?.Invoke(true); };
-                timer.AutoReset = false;
-                timer.Enabled = true;
-            }
-        }
     }
 }

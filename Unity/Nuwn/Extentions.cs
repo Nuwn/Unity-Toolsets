@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -59,6 +61,61 @@ namespace Nuwn
                         camerasViewing.Add(cam);
                 }
                 return camerasViewing;
+            }
+        }
+        public static class MonoBehaviourExtentions
+        {
+            /// <summary>
+            /// Waits n time before activating the debugger.
+            /// usage : this.setTimeout(1, (result) => { Debug.Log("debug"); } );
+            /// </summary>
+            /// <param name="instance"></param>
+            /// <param name="waitTime"></param>
+            /// <param name="Callback"></param>
+            public static void SetTimeout(this MonoBehaviour instance, Action Callback, float waitTime)
+            {
+                instance.StartCoroutine(Wait((res) => Callback?.Invoke(), waitTime));
+            }
+            public static void SetTimeout(this MonoBehaviour instance, Action<object> Callback, float waitTime)
+            {
+                instance.StartCoroutine(Wait( (res) => Callback?.Invoke(true), waitTime));
+            }
+            /// <summary>
+            /// Continues interval with callback, use stopinterval to stop it.
+            /// </summary>
+            /// <param name="instance"></param>
+            /// <param name="Callback"></param>
+            /// <param name="intervalTime"></param>
+            /// <returns></returns>
+            public static Coroutine SetInterval(this MonoBehaviour instance, Action<object> Callback, float intervalTime)
+            {
+                return instance.StartCoroutine(RepeatingWait((res) => Callback?.Invoke(true), intervalTime));
+            }
+            public static Coroutine SetInterval(this MonoBehaviour instance, Action Callback, float intervalTime)
+            {
+                return instance.StartCoroutine(RepeatingWait((res) => Callback?.Invoke(), intervalTime));
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="instance"></param>
+            /// <param name="coroutine">The interval to stop, store it as a var</param>
+            public static void StopInterval(this MonoBehaviour instance, Coroutine coroutine)
+            {
+                instance.StopCoroutine(coroutine);
+            }
+            static IEnumerator Wait(Action<bool> Callback, float duration)
+            {
+                yield return new WaitForSeconds(duration / 1000);
+                Callback.Invoke(true);
+            }
+            static IEnumerator RepeatingWait( Action<bool> Callback, float waitTime)
+            {
+                while (true)
+                {
+                    yield return new WaitForSeconds(waitTime / 1000);
+                    Callback.Invoke(true);
+                }
             }
         }
     }
