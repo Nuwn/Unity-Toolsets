@@ -118,6 +118,49 @@ namespace Nuwn
                 }
             }
         }
+        public static class PHP
+        {
+            public static bool Empty<T>(this T type)
+            {
+
+                if (type == null)
+                {
+                    return true;
+                }
+                else if (type.GetType() == typeof(string))
+                {
+                    string data = (string)(object)type;
+                    return (data == "" || data == "0") ? true : false;
+                }
+                else if (type.GetType() == typeof(int))
+                {
+                    int data = (int)(object)type;
+                    return (data == 0) ? true : false;
+                }
+                else if (type.GetType() == typeof(float))
+                {
+                    float data = (float)(object)type;
+                    return (data == 0.0) ? true : false;
+                }
+                else if (type.GetType() == typeof(bool))
+                {
+                    bool data = (bool)(object)type;
+                    return (data == false) ? true : false;
+                }
+                else if (type.GetType().IsArray)
+                {
+                    ICollection data = (object)type as ICollection;
+                    return (data.Count == 0) ? true : false;
+                }
+                else if (type.GetType().IsGenericType)
+                {
+                    ICollection data = (object)type as ICollection;
+                    return (data.Count == 0) ? true : false;
+                }
+                else
+                    throw new ArgumentNullException("This Object is not implemented for this type.");
+            }
+        }
     }
 }
 
