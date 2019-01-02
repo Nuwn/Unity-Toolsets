@@ -147,12 +147,7 @@ namespace Nuwn
                     bool data = (bool)(object)type;
                     return (data == false) ? true : false;
                 }
-                else if (type.GetType().IsArray)
-                {
-                    ICollection data = (object)type as ICollection;
-                    return (data.Count == 0) ? true : false;
-                }
-                else if (type.GetType().IsGenericType)
+                else if (type.GetType().IsArray || type.GetType().IsGenericType)
                 {
                     ICollection data = (object)type as ICollection;
                     return (data.Count == 0) ? true : false;

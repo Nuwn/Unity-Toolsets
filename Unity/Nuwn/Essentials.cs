@@ -93,7 +93,7 @@ namespace Nuwn
             /// <param name="parent">Ignore or set as null to not have a parent</param>
             /// <param name="child">True if you want to search thru childs</param>
             /// <returns></returns>
-            public T Create<T>(GameObject prefab, Vector3 startPos, Quaternion startRot, Transform parent = null, bool child = false)
+            public static T Create<T>(GameObject prefab, Vector3 startPos, Quaternion startRot, Transform parent = null, bool child = false)
             {
                 GameObject newObject = Instantiate(prefab, startPos, startRot, parent) as GameObject;
 
