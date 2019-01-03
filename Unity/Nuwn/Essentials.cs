@@ -5,7 +5,7 @@ using System.Timers;
 using UnityEngine;
 
 namespace Nuwn
-{
+{ 
     namespace Essentials
     {
         public class Essentials : MonoBehaviour
@@ -22,9 +22,9 @@ namespace Nuwn
                 newPos = cam.WorldToViewportPoint(newPos);
                 //Simple check if the target object is out of the screen or inside
                 if (newPos.x > 1 || newPos.y > 1 || newPos.x < 0 || newPos.y < 0)
-                    return true;
-                else
                     return false;
+                else
+                    return true;
             }
             /// <summary>
             /// Array randomizer, insert ex.

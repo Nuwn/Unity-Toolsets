@@ -27,9 +27,9 @@ gulp.task('mincss', function() {
 });
 
 gulp.task('watch_c#', function(){
-    gulp.watch('../FloorIsLiterallyLava/Assets/Nuwn/*.cs', ['C#']); 
+    gulp.watch('../FloorIsLiterallyLava/Assets/Nuwn/*', ['C#']); 
 })
 gulp.task('C#', function () {
-  return gulp.src('../FloorIsLiterallyLava/Assets/Nuwn/*.cs')
+  return gulp.src('../FloorIsLiterallyLava/Assets/Nuwn/*')
     .pipe(gulp.dest('./Unity/Nuwn'));
 });
