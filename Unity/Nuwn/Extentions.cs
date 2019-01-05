@@ -28,20 +28,14 @@ namespace Nuwn
             /// </summary>
             /// <param name="transform"></param>
             /// <returns></returns>
-            public static bool IsInView(this Transform transform)
-            {
-                return Essentials.Essentials.IsInView(transform.position, Camera.main);
-            }
+            public static bool IsInView(this Transform transform) => Essentials.Essentials.IsInView(transform.position, Camera.main);
             /// <summary>
             /// Checks if transform is in view of the targeted camera
             /// </summary>
             /// <param name="transform"></param>
             /// <param name="cam"></param>
             /// <returns></returns>
-            public static bool IsInView(this Transform transform, Camera cam)
-            {
-                return Essentials.Essentials.IsInView(transform.position, cam);
-            }
+            public static bool IsInView(this Transform transform, Camera cam) => Essentials.Essentials.IsInView(transform.position, cam);
             /// <summary>
             /// returns which camera is viewing the target, 
             /// asking for a list of all cameras you wish too look up,
@@ -72,14 +66,8 @@ namespace Nuwn
             /// <param name="instance"></param>
             /// <param name="waitTime"></param>
             /// <param name="Callback"></param>
-            public static void SetTimeout(this MonoBehaviour instance, Action Callback, float waitTime)
-            {
-                instance.StartCoroutine(Wait((res) => Callback?.Invoke(), waitTime));
-            }
-            public static void SetTimeout(this MonoBehaviour instance, Action<object> Callback, float waitTime)
-            {
-                instance.StartCoroutine(Wait( (res) => Callback?.Invoke(true), waitTime));
-            }
+            public static void SetTimeout(this MonoBehaviour instance, Action Callback, float waitTime) => instance.StartCoroutine(Wait((res) => Callback?.Invoke(), waitTime));
+            public static void SetTimeout(this MonoBehaviour instance, Action<object> Callback, float waitTime) => instance.StartCoroutine(Wait((res) => Callback?.Invoke(true), waitTime));
             /// <summary>
             /// Continues interval with callback, use stopinterval to stop it.
             /// </summary>
@@ -87,23 +75,14 @@ namespace Nuwn
             /// <param name="Callback"></param>
             /// <param name="intervalTime"></param>
             /// <returns></returns>
-            public static Coroutine SetInterval(this MonoBehaviour instance, Action<object> Callback, float intervalTime)
-            {
-                return instance.StartCoroutine(RepeatingWait((res) => Callback?.Invoke(true), intervalTime));
-            }
-            public static Coroutine SetInterval(this MonoBehaviour instance, Action Callback, float intervalTime)
-            {
-                return instance.StartCoroutine(RepeatingWait((res) => Callback?.Invoke(), intervalTime));
-            }
+            public static Coroutine SetInterval(this MonoBehaviour instance, Action<object> Callback, float intervalTime) => instance.StartCoroutine(RepeatingWait((res) => Callback?.Invoke(true), intervalTime));
+            public static Coroutine SetInterval(this MonoBehaviour instance, Action Callback, float intervalTime) => instance.StartCoroutine(RepeatingWait((res) => Callback?.Invoke(), intervalTime));
             /// <summary>
             /// 
             /// </summary>
             /// <param name="instance"></param>
             /// <param name="coroutine">The interval to stop, store it as a var</param>
-            public static void StopInterval(this MonoBehaviour instance, Coroutine coroutine)
-            {
-                instance.StopCoroutine(coroutine);
-            }
+            public static void StopInterval(this MonoBehaviour instance, Coroutine coroutine) => instance.StopCoroutine(coroutine);
             static IEnumerator Wait(Action<bool> Callback, float duration)
             {
                 yield return new WaitForSeconds(duration / 1000);
@@ -122,7 +101,6 @@ namespace Nuwn
         {
             public static bool Empty<T>(this T type)
             {
-
                 if (type == null)
                 {
                     return true;

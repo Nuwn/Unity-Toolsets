@@ -18,13 +18,9 @@ namespace Nuwn
             /// <returns>True is in view</returns>
             public static bool IsInView(Vector3 Position, Camera cam)
             {
-                Vector3 newPos = Position;
-                newPos = cam.WorldToViewportPoint(newPos);
+                Vector3 newPos = cam.WorldToViewportPoint(Position);
                 //Simple check if the target object is out of the screen or inside
-                if (newPos.x > 1 || newPos.y > 1 || newPos.x < 0 || newPos.y < 0)
-                    return false;
-                else
-                    return true;
+                return (newPos.x > 1 || newPos.y > 1 || newPos.x < 0 || newPos.y < 0) ? false : true;
             }
             /// <summary>
             /// Array randomizer, insert ex.
@@ -33,10 +29,7 @@ namespace Nuwn
             /// <param name="start"></param>
             /// <param name="length"></param>
             /// <returns></returns>
-            public static int Randomizer(int start, int length)
-            {
-                return UnityEngine.Random.Range(0, length - 1);
-            }
+            public static int Randomizer(int start, int length) => UnityEngine.Random.Range(0, length - 1);
             /// <summary>
             /// Array itterator, 
             /// if you want to itterate more then once put it in a loop
@@ -49,12 +42,20 @@ namespace Nuwn
             /// <returns></returns>
             public static int NextPrev(object[] array, object current, int itteration)
             {
+                if (current == null)
+                    throw new ArgumentNullException("Value for current not set");
+
+                if (itteration != 1 && itteration != -1)
+                    throw new ArgumentNullException("Wrong Itteration");
+
                 var length = array.Length;
-                var currentIndex = System.Array.IndexOf(array, current);
+                var currentIndex = Array.IndexOf(array, current);
+
+                if (currentIndex == -1)
+                    throw new ArgumentNullException("Object does not exist in array");
+                
                 int res = 0;
 
-                if (current == null)
-                    return 0;
                 if (itteration == 1)
                 {
                     if (currentIndex == length - 1)
