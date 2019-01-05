@@ -99,6 +99,11 @@ namespace Nuwn
         }
         public static class PHP
         {
+            public static bool Empty<T>(this T type, out object value)
+            {
+                value = type;
+                return Empty(type);
+            }
             public static bool Empty<T>(this T type)
             {
                 if (type == null)
@@ -123,7 +128,7 @@ namespace Nuwn
                 else if (type.GetType() == typeof(bool))
                 {
                     bool data = (bool)(object)type;
-                    return (data == false) ? true : false;
+                    return !data;
                 }
                 else if (type.GetType().IsArray || type.GetType().IsGenericType)
                 {
