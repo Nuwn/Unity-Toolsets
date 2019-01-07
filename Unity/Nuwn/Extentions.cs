@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,6 @@ namespace Nuwn
             {
                 return trans.position = Vector3.zero;
             }
-
         }
         public static class TransformExtensions
         {
@@ -83,6 +83,11 @@ namespace Nuwn
             /// <param name="instance"></param>
             /// <param name="coroutine">The interval to stop, store it as a var</param>
             public static void StopInterval(this MonoBehaviour instance, Coroutine coroutine) => instance.StopCoroutine(coroutine);
+
+
+
+
+            #region Internal functions
             static IEnumerator Wait(Action<bool> Callback, float duration)
             {
                 yield return new WaitForSeconds(duration / 1000);
@@ -96,6 +101,7 @@ namespace Nuwn
                     Callback.Invoke(true);
                 }
             }
+            #endregion
         }
         public static class PHP
         {
@@ -139,6 +145,7 @@ namespace Nuwn
                     throw new ArgumentNullException("This Object is not implemented for this type.");
             }
         }
+
     }
 }
 

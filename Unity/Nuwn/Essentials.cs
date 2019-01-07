@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 using UnityEngine;
 
@@ -38,48 +39,22 @@ namespace Nuwn
             /// </summary>
             /// <param name="array"></param>
             /// <param name="current"></param>
-            /// <param name="itteration">-1 or 1</param>
+            /// <param name="forward">move forwards? or backwards</param>
             /// <returns></returns>
-            public static int NextPrev(object[] array, object current, int itteration)
+            public static int NextPrev(object[] array, object current, bool forward)
             {
-                if (current == null)
-                    throw new ArgumentNullException("Value for current not set");
-
-                if (itteration != 1 && itteration != -1)
-                    throw new ArgumentNullException("Wrong Itteration");
+                if (current == null) throw new ArgumentNullException("Value for current not set");
 
                 var length = array.Length;
                 var currentIndex = Array.IndexOf(array, current);
 
-                if (currentIndex == -1)
-                    throw new ArgumentNullException("Object does not exist in array");
+                if (currentIndex == -1) throw new ArgumentNullException("Object does not exist in array");
                 
-                int res = 0;
-
-                if (itteration == 1)
-                {
-                    if (currentIndex == length - 1)
-                    {
-                        res = 0;
-                    }
-                    else
-                    {
-                        res = currentIndex + 1;
-                    }
-                }
-                else if (itteration == -1)
-                {
-                    if (currentIndex == 0)
-                    {
-                        res = length - 1;
-                    }
-                    else
-                    {
-                        res = currentIndex - 1;
-                    }
-                }
-                return res;
-            }      
+                if (forward)
+                    return (currentIndex == length - 1) ? 0 : currentIndex + 1;
+                else
+                    return (currentIndex == 0) ? length - 1 : currentIndex - 1;              
+            }
         }
         public class Instanciating : MonoBehaviour
         {
@@ -98,9 +73,7 @@ namespace Nuwn
             {
                 GameObject newObject = Instantiate(prefab, startPos, startRot, parent) as GameObject;
 
-                T yourObject = (child) ? newObject.GetComponentInChildren<T>() : newObject.GetComponent<T>(); ;
-                
-                return yourObject;
+                return (child) ? newObject.GetComponentInChildren<T>() : newObject.GetComponent<T>();
             }
         }
         public class Colliders : MonoBehaviour
@@ -111,10 +84,8 @@ namespace Nuwn
             /// <param name="col1">First Collider</param>
             /// <param name="col2">Second Collider</param>
             /// <param name="ignore">Set false to remove the ignore</param>
-            public static void IgnoreCollision(Collider col1, Collider col2, bool ignore)
-            {
-                Physics.IgnoreCollision(col1, col2, ignore);
-            }
-        }  
+            public static void IgnoreCollision(Collider col1, Collider col2, bool ignore) => Physics.IgnoreCollision(col1, col2, ignore);
+        }   
+        }   
     }
 }
