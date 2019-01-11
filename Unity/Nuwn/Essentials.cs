@@ -9,7 +9,7 @@ namespace Nuwn
 { 
     namespace Essentials
     {
-        public class Essentials : MonoBehaviour
+        public class Nuwn_Essentials : MonoBehaviour
         {
             /// <summary>
             /// Checks whether the target position is in screen view
@@ -56,7 +56,7 @@ namespace Nuwn
                     return (currentIndex == 0) ? length - 1 : currentIndex - 1;              
             }
         }
-        public class Instanciating : MonoBehaviour
+        public class Nuwn_Instanciating : MonoBehaviour
         {
             /// <summary>
             /// Instanciating a object and returns a targeted component, 
@@ -76,7 +76,7 @@ namespace Nuwn
                 return (child) ? newObject.GetComponentInChildren<T>() : newObject.GetComponent<T>();
             }
         }
-        public class Colliders : MonoBehaviour
+        public class Nuwn_Colliders : MonoBehaviour
         {
             /// <summary>
             /// Set and ignore on colliders 1 and 2.
@@ -84,8 +84,14 @@ namespace Nuwn
             /// <param name="col1">First Collider</param>
             /// <param name="col2">Second Collider</param>
             /// <param name="ignore">Set false to remove the ignore</param>
-            public static void IgnoreCollision(Collider col1, Collider col2, bool ignore) => Physics.IgnoreCollision(col1, col2, ignore);
+            public static void IgnoreCollision(Collider coll1, Collider coll2, bool ignore) => Physics.IgnoreCollision(coll1, coll2, ignore);
+            public static void MultiIgnoreCollision(Collider coll1, List<Collider> CollList, bool ignore)
+            {
+                foreach (var col in CollList)
+                {
+                    IgnoreCollision(coll1, col, ignore);
+                }
+            }
         }   
-        }   
-    }
+    }   
 }

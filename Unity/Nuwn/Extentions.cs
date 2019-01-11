@@ -28,14 +28,14 @@ namespace Nuwn
             /// </summary>
             /// <param name="transform"></param>
             /// <returns></returns>
-            public static bool IsInView(this Transform transform) => Essentials.Essentials.IsInView(transform.position, Camera.main);
+            public static bool IsInView(this Transform transform) => Essentials.Nuwn_Essentials.IsInView(transform.position, Camera.main);
             /// <summary>
             /// Checks if transform is in view of the targeted camera
             /// </summary>
             /// <param name="transform"></param>
             /// <param name="cam"></param>
             /// <returns></returns>
-            public static bool IsInView(this Transform transform, Camera cam) => Essentials.Essentials.IsInView(transform.position, cam);
+            public static bool IsInView(this Transform transform, Camera cam) => Essentials.Nuwn_Essentials.IsInView(transform.position, cam);
             /// <summary>
             /// returns which camera is viewing the target, 
             /// asking for a list of all cameras you wish too look up,
@@ -50,7 +50,7 @@ namespace Nuwn
 
                 foreach (var cam in cameras)
                 {
-                    var res = Essentials.Essentials.IsInView(transform.position, cam);
+                    var res = Essentials.Nuwn_Essentials.IsInView(transform.position, cam);
                     if (res)
                         camerasViewing.Add(cam);
                 }
@@ -112,6 +112,7 @@ namespace Nuwn
             }
             public static bool Empty<T>(this T type)
             {
+
                 if (type == null)
                 {
                     return true;
@@ -142,7 +143,7 @@ namespace Nuwn
                     return (data.Count == 0) ? true : false;
                 }
                 else
-                    throw new ArgumentNullException("This Object is not implemented for this type.");
+                    throw new ArgumentOutOfRangeException("This Object is not implemented for this type.");
             }
         }
 
