@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b3f3d3a576bb74892a7a0b06a556b9, type: 3}
+  m_Name: DoorOpen
+  m_EditorClassIdentifier: 
+  AudioClip: {fileID: 8300000, guid: 5d036f68d1afce346b68eaca16d6b6e8, type: 3}
+  Volume: 0.8
+  AudioMixerGroup: {fileID: 0}
+  Loop: 0

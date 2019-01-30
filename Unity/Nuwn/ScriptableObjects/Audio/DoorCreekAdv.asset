@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a5756a013746c40867e8f80e4c4641, type: 3}
+  m_Name: DoorCreekAdv
+  m_EditorClassIdentifier: 
+  AudioClip:
+  - {fileID: 8300000, guid: 5d036f68d1afce346b68eaca16d6b6e8, type: 3}
+  Volume: 0.8
+  VolumeVariance: 0.2
+  Pitch: 1
+  PitchVariance: 0.05
+  AudioMixerGroup: {fileID: 243347868859870768, guid: 3a2a988525982b7489a7e2617100e383,
+    type: 2}
+  Loop: 0
