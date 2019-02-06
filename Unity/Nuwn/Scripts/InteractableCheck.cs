@@ -187,11 +187,11 @@ public class InteractableCheck : MonoBehaviour {
     }
     bool PLayerIsLookingAtObject()
     {
-        if (CameraHolder.GetComponent<PlayerRayCaster>().GetLookingAt().transform == InteractOptions.TargetingControls.TargetTransform)
-        {
-            return true;
-        }
-        return false;
+        if (CameraHolder.GetComponent<PlayerRayCaster>().GetLookingAtTransform() == InteractOptions.TargetingControls.TargetTransform)
+            {
+                return true;
+            }
+            return false;        
     }
     bool ObjectIsBehindPlayer()
     {

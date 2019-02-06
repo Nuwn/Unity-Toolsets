@@ -14,7 +14,7 @@ public class PlayerRayCaster : MonoBehaviour {
         {
             Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.blue);
             DebugTarget = hit.transform;
-            Debug.Log(hit.collider.name);
+            //Debug.Log(hit.collider.transform.name);
         }
         else
         {
@@ -22,9 +22,26 @@ public class PlayerRayCaster : MonoBehaviour {
         }
     }
 
-    public RaycastHit GetLookingAt()
+    public Transform GetLookingAtTransform()
     {
-        return hit;
+        try
+        {
+            return hit.collider.transform;
+        }
+        catch (System.NullReferenceException)
+        {
+            return null;
+        }
     }
-
+    public Collider GetLookingAtColl()
+    {
+        try
+        {
+            return hit.collider;
+        }
+        catch (System.NullReferenceException)
+        {
+            return null;
+        }
+    }
 }

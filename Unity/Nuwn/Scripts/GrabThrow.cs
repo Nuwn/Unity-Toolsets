@@ -233,7 +233,7 @@ public class GrabThrow : MonoBehaviour {
 
     bool PLayerIsLookingAtObject()
     {
-        if (CameraHolder.GetComponent<PlayerRayCaster>().GetLookingAt().transform == LookatControls.TargetTransform)
+        if (CameraHolder.GetComponent<PlayerRayCaster>().GetLookingAtTransform() == LookatControls.TargetTransform)
         {
             return true;
         }

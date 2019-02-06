@@ -7,7 +7,7 @@ using UnityEngine.Events;
 [DisallowMultipleComponent, RequireComponent(typeof(Animator), typeof(InteractableCheck))]
 public class DoorOpenClose : MonoBehaviour {
      
-      
+        
     public bool startOpen = false;
     public bool startLocked = false;
     public bool canLock = false;
