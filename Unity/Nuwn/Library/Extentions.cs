@@ -21,18 +21,6 @@ namespace Nuwn
                 return trans.position = Vector3.zero;
             }
         }
-        public static class ColliderExtentions
-        {
-            public static Vector3 RandomPointInBounds(this Collider col)
-            {
-                return new Vector3(
-                    UnityEngine.Random.Range(col.bounds.min.x, col.bounds.max.x),
-                    UnityEngine.Random.Range(col.bounds.min.y, col.bounds.max.y),
-                    UnityEngine.Random.Range(col.bounds.min.z, col.bounds.max.z)
-                );
-            }
-        }
-
         public static class TransformExtensions
         {
             /// <summary>
@@ -158,7 +146,10 @@ namespace Nuwn
                     throw new ArgumentOutOfRangeException("This Object is not implemented for this type.");
             }
         }
-
+        public static class JS
+        {
+          
+        }
     }
 }
 
