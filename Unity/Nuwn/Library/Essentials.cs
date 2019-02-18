@@ -55,6 +55,34 @@ namespace Nuwn
                 else
                     return (currentIndex == 0) ? length - 1 : currentIndex - 1;              
             }
+            public static IEnumerator Lerp(Action<float> @return, float from, float to, float duration = 2, Action<bool> Callback = null)
+            {
+                var i = 0f;
+                var rate = 1f / duration;
+
+                while (i < 1f)
+                {
+                    i += Time.deltaTime * rate;
+                    @return(Mathf.Lerp(from, to, i));
+                    yield return null;
+                }
+                @return(to);
+                Callback?.Invoke(true);
+            }
+            public static IEnumerator Lerp(Action<Vector3> @return, Vector3 from, Vector3 to, float duration = 2, Action<bool> Callback = null)
+            {
+                var i = 0f;
+                var rate = 1f / duration;
+
+                while (i < 1f)
+                {
+                    i += Time.deltaTime * rate;
+                    @return(Vector3.Lerp(from, to, i));
+                    yield return null;
+                }
+                @return(to);
+                Callback?.Invoke(true);
+            }
         }
         public class Nuwn_Instanciating : MonoBehaviour
         {
@@ -92,6 +120,11 @@ namespace Nuwn
                     IgnoreCollision(coll1, col, ignore);
                 }
             }
-        }   
+        }
+        public struct RangedFloat
+        {
+            public float minValue;
+            public float maxValue;
+        }
     }   
 }
