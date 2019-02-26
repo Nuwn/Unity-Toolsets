@@ -20,6 +20,10 @@ namespace Nuwn
             {
                 return trans.position = Vector3.zero;
             }
+            public static bool HasComponent<T>(this GameObject obj) where T : Component
+            {
+                return obj.GetComponent<T>() != null;
+            } 
         }
         public static class TransformExtensions
         {
