@@ -1,3 +1,4 @@
+using Nuwn.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace Nuwn
                 else
                     return (currentIndex == 0) ? length - 1 : currentIndex - 1;              
             }
-            public static IEnumerator Lerp(Action<float> @return, float from, float to, float duration = 2, Action<bool> Callback = null)
+            public static IEnumerator LerpFloat(Action<float> @return, float from, float to, float duration = 2, Action<bool> Callback = null)
             {
                 var i = 0f;
                 var rate = 1f / duration;
@@ -63,13 +64,13 @@ namespace Nuwn
                 while (i < 1f)
                 {
                     i += Time.deltaTime * rate;
-                    @return(Mathf.Lerp(from, to, i));
+                    @return(Mathf.Lerp(from, to, Mathf.SmoothStep(0.0f, 1.0f, i)));
                     yield return null;
                 }
                 @return(to);
                 Callback?.Invoke(true);
             }
-            public static IEnumerator Lerp(Action<Vector3> @return, Vector3 from, Vector3 to, float duration = 2, Action<bool> Callback = null)
+            public static IEnumerator LerpVector3(Action<Vector3> @return, Vector3 from, Vector3 to, float duration = 2, Action<bool> Callback = null)
             {
                 var i = 0f;
                 var rate = 1f / duration;
@@ -77,11 +78,40 @@ namespace Nuwn
                 while (i < 1f)
                 {
                     i += Time.deltaTime * rate;
-                    @return(Vector3.Lerp(from, to, i));
+                    @return(Vector3.Lerp(from, to, Mathf.SmoothStep(0.0f, 1.0f, i)));
                     yield return null;
                 }
                 @return(to);
                 Callback?.Invoke(true);
+            }
+            public static IEnumerator LerpQuaternion(Action<Quaternion> @return, Quaternion from, Quaternion to, float duration = 2, Action<bool> Callback = null)
+            {
+                var i = 0f;
+                var rate = 1f / duration;
+
+                while (i < 1f)
+                {
+                    i += Time.deltaTime * rate;
+                    @return(Quaternion.Lerp(from, to, Mathf.SmoothStep(0.0f, 1.0f, i)));
+                    yield return null;
+                }
+                @return(to);
+                Callback?.Invoke(true);
+            }
+
+            /// <summary>
+            /// Checks if the number is between 2 values;
+            /// </summary>
+            /// <param name="num"></param>
+            /// <param name="lower"></param>
+            /// <param name="upper"></param>
+            /// <param name="inclusive"></param>
+            /// <returns></returns>
+            public static bool Between(float num, float lower, float upper, bool inclusive = false)
+            {
+                return inclusive
+                    ? lower <= num && num <= upper
+                    : lower < num && num < upper;
             }
         }
         public class Nuwn_Instanciating : MonoBehaviour
@@ -125,6 +155,14 @@ namespace Nuwn
         {
             public float minValue;
             public float maxValue;
+        }
+        public static class Nuwn_Statics
+        {
+            public static bool HasMethod(this object objectToCheck, string methodName)
+            {
+                var type = objectToCheck.GetType();
+                return type.GetMethod(methodName) != null;
+            }
         }
     }   
 }

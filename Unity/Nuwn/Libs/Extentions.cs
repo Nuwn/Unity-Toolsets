@@ -11,19 +11,15 @@ namespace Nuwn
         public static class Extensions
         {
             /// <summary>
-            /// How to use: transform.position = transform.SetPosition()
-            /// just to show how to build extentions
+            /// Chech whether or not a gameobject has a component.
             /// </summary>
-            /// <param name="trans"></param>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="obj"></param>
             /// <returns></returns>
-            public static Vector3 SetPosition(this Transform trans)
-            {
-                return trans.position = Vector3.zero;
-            }
             public static bool HasComponent<T>(this GameObject obj) where T : Component
             {
                 return obj.GetComponent<T>() != null;
-            } 
+            }
         }
         public static class TransformExtensions
         {
@@ -64,8 +60,8 @@ namespace Nuwn
         public static class MonoBehaviourExtentions
         {
             /// <summary>
-            /// Waits n time before activating the debugger.
-            /// usage : this.setTimeout(1, (result) => { Debug.Log("debug"); } );
+            /// Waits n time before activating the debugger. milliseconds
+            /// usage : this.setTimeout((result) => { Debug.Log("debug"); }, 1000 );
             /// </summary>
             /// <param name="instance"></param>
             /// <param name="waitTime"></param>
@@ -74,6 +70,7 @@ namespace Nuwn
             public static void SetTimeout(this MonoBehaviour instance, Action<object> Callback, float waitTime) => instance.StartCoroutine(Wait((res) => Callback?.Invoke(true), waitTime));
             /// <summary>
             /// Continues interval with callback, use stopinterval to stop it.
+            /// Calls method aftergiven time.
             /// </summary>
             /// <param name="instance"></param>
             /// <param name="Callback"></param>
@@ -90,14 +87,13 @@ namespace Nuwn
 
 
 
-
             #region Internal functions
             static IEnumerator Wait(Action<bool> Callback, float duration)
             {
                 yield return new WaitForSeconds(duration / 1000);
                 Callback.Invoke(true);
             }
-            static IEnumerator RepeatingWait( Action<bool> Callback, float waitTime)
+            static IEnumerator RepeatingWait(Action<bool> Callback, float waitTime)
             {
                 while (true)
                 {
@@ -115,13 +111,12 @@ namespace Nuwn
                 return Empty(type);
             }
             public static bool Empty<T>(this T type)
-            {
-
-                if (type == null)
+            {   
+                if(type == null)
                 {
                     return true;
                 }
-                else if (type.GetType() == typeof(string))
+                if (type.GetType() == typeof(string))
                 {
                     string data = (string)(object)type;
                     return (data == "" || data == "0") ? true : false;
@@ -147,12 +142,61 @@ namespace Nuwn
                     return (data.Count == 0) ? true : false;
                 }
                 else
-                    throw new ArgumentOutOfRangeException("This Object is not implemented for this type.");
+                {
+                    return (type == null) ? true : false;
+                }
             }
         }
-        public static class JS
+        public static class LayerMaskExtensions
         {
-          
+            public static bool HasLayer(this LayerMask layerMask, int layer)
+            {
+                if (layerMask == (layerMask | (1 << layer)))
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public static bool[] HasLayers(this LayerMask layerMask)
+            {
+                var hasLayers = new bool[32];
+
+                for (int i = 0; i < 32; i++)
+                {
+                    if (layerMask == (layerMask | (1 << i)))
+                    {
+                        hasLayers[i] = true;
+                    }
+                }
+                return hasLayers;
+            }
+        }
+        public static class ColliderExtentions
+        {
+            public static Vector3 RandomPointInBounds(this Collider col)
+            {
+                return new Vector3(
+                    UnityEngine.Random.Range(col.bounds.min.x, col.bounds.max.x),
+                    UnityEngine.Random.Range(col.bounds.min.y, col.bounds.max.y),
+                    UnityEngine.Random.Range(col.bounds.min.z, col.bounds.max.z)
+                );
+            }
+            //public static Vector3 GetPositionInBounds(this Collider col, Transform obj)
+            //{
+            //    return col.bounds.Contains;
+            //}
+        }
+        public static class AudioExtentions
+        {
+            public static void FadeIn (this AudioSource a, MonoBehaviour instance, float to, float time, Action callback = null)
+            {
+                instance.StartCoroutine(Essentials.Nuwn_Essentials.LerpFloat((f) => { a.volume = f; }, 0, to, time, (v) => { callback?.Invoke(); } ));
+            }
+            public static void FadeOut(this AudioSource a, MonoBehaviour instance, float from, float time, Action callback = null)
+            {
+                instance.StartCoroutine(Essentials.Nuwn_Essentials.LerpFloat((f) => { a.volume = f; }, from, 0, time, (v) => { callback?.Invoke(); } ));
+            }
         }
     }
 }
