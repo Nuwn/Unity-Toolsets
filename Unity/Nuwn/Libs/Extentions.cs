@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 namespace Nuwn
 {
@@ -19,6 +20,32 @@ namespace Nuwn
             public static bool HasComponent<T>(this GameObject obj) where T : Component
             {
                 return obj.GetComponent<T>() != null;
+            }
+            public static bool HasMethod(this object objectToCheck, string methodName)
+            {
+                var type = objectToCheck.GetType();
+                return type.GetMethod(methodName) != null;
+            }
+            public static bool HasProperty(this object objectToCheck, string propertyName)
+            {
+                var type = objectToCheck.GetType();
+                return type.GetProperty(propertyName) != null;
+            }
+
+        }
+        public static class DebugExtentions
+        {
+            public static void LogList<T>(this List<T> list) 
+            {
+                foreach (var l in list)
+                {
+                    Debug.Log(l);
+                }   
+            }
+
+            private static object GetPropValue<T>(T l, string property)
+            {
+                throw new NotImplementedException();
             }
         }
         public static class TransformExtensions
@@ -55,6 +82,53 @@ namespace Nuwn
                         camerasViewing.Add(cam);
                 }
                 return camerasViewing;
+            }
+
+            public static List<GameObject> GetAllChildren(this Transform transform)
+            {
+                List<GameObject> List = new List<GameObject>();
+
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    List.Add(transform.GetChild(i).gameObject);
+                }
+                return List;
+            }
+
+            /// <summary>
+            /// Returns a list of first level childrens of a object containing a string key
+            /// </summary>
+            /// <param name="transform"></param>
+            /// <param name="name"></param>
+            /// <returns></returns>
+            public static List<GameObject> GetAllChildrenContainString(this Transform transform, string name)
+            {
+                List<GameObject> List = new List<GameObject>();
+
+                for(int i = 0; i < transform.childCount; i++)
+                {
+                    if (transform.GetChild(i).name.Contains(name))
+                        List.Add(transform.GetChild(i).gameObject);
+                }
+                return List;
+            }
+            /// <summary>
+            /// Check for children first level for regex match
+            /// </summary>
+            /// <param name="transform"></param>
+            /// <param name="regex"></param>
+            /// <returns></returns>
+            public static List<GameObject> GetAllChildrenRegexString(this Transform transform, string regex)
+            {
+                List<GameObject> List = new List<GameObject>();
+                var newRegex = new Regex(regex);
+
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    if (newRegex.IsMatch(transform.GetChild(i).name))
+                        List.Add(transform.GetChild(i).gameObject);
+                }
+                return List;
             }
         }
         public static class MonoBehaviourExtentions

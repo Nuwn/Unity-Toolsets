@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace Nuwn
 { 
@@ -12,6 +14,29 @@ namespace Nuwn
     {
         public class Nuwn_Essentials : MonoBehaviour
         {
+            /// <summary>
+            /// async loads scene
+            /// </summary>
+            /// <param name="newScene"></param>
+            /// <param name="oldScene"> ignore this to disable unload</param>
+            /// <returns></returns>
+            public static IEnumerator LoadNewScene(int newScene, int oldScene = -1)
+            {
+                AsyncOperation async = SceneManager.LoadSceneAsync(newScene);
+
+                while (!async.isDone)
+                {
+                    yield return null;
+                }
+
+                if (oldScene != -1)
+                {
+                    SceneManager.UnloadSceneAsync(oldScene);
+                }
+            }
+
+
+
             /// <summary>
             /// Checks whether the target position is in screen view
             /// </summary>
@@ -32,6 +57,19 @@ namespace Nuwn
             /// <param name="length"></param>
             /// <returns></returns>
             public static int Randomizer(int start, int length) => UnityEngine.Random.Range(0, length - 1);
+            public static bool RandomPercentage(float percent)
+            {
+                System.Random random = new System.Random();
+                double rand = random.NextDouble();
+                if (rand < (percent / 100))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
             /// <summary>
             /// Array itterator, 
             /// if you want to itterate more then once put it in a loop
@@ -163,6 +201,11 @@ namespace Nuwn
                 var type = objectToCheck.GetType();
                 return type.GetMethod(methodName) != null;
             }
+
         }
+
+        [Serializable] public class UnityEventGameObject : UnityEvent<GameObject> { }
+        [Serializable] public class UnityEventCollider2D : UnityEvent<Collider2D> { }
+        [Serializable] public class UnityEventCollider : UnityEvent<Collider> { }
     }   
 }
