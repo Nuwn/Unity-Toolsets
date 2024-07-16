@@ -21,10 +21,11 @@ public void OnEventHappened(object data) => res = (bool) data;
 ```
 
 ## SaveSystem
-This homemade save system saves encrypted Json files to "MyGames" instead of PlayPrefs or databases.<br>
-Inspired more by MongoDB.<br>
+This homemade save system saves encrypted Byte64 files to APPDATA instead of PlayPrefs or databases.<br>
 
-Save system makes use of [Lazy's Global Coroutine](https://github.com/Lazy-Solutions/Unity.CoroutineUtility) and Newtonsoft.json.<br>
+Tested for PC, Android.
+
+Save system makes use of [Lazy's Global Coroutine](https://github.com/Lazy-Solutions/Unity.CoroutineUtility).<br>
 It allowes the use of coroutine during saves to avoid spikes, to save 1 file every frame.<br>
 Stutter can still happen if one is to save a massive dump.
 
@@ -37,21 +38,13 @@ How to use:
 ```
 List<InventoryItem> inventory;
 
+var saveAddress = "Player/Inventory";
+
 inventory = SaveSystem.Load<List<ItemRef>>(SaveAddress);
 
 SaveSystem.Save(SaveAddress, inventory);
-
-protected string SaveAddress
-{
-    get
-    {
-        string address = $"Inventory/{inventoryType}";
-        address += (inventoryType != InventoryType.Backpack) ? "/"+inventoryID : "";
-        return address;
-    }
-}
-
 ``` 
+
 Future plans?:
 - If the time comes to develop for other platforms, I may upgrade the file location.
 - If i ever is in need of cloud save, i might hook it up to services like Playfabs or Mongo database.

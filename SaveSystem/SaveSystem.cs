@@ -1,256 +1,302 @@
 using Lazy.Utility;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
-using static System.Environment;
 
-// Requires packages:
-// https://github.com/Lazy-Solutions/Unity.CoroutineUtility
-// Newtonsoft.json
-
-public static class SaveSystem
+namespace LazySaveSystem
 {
-    #region Settings
-    private static SaveEventArgs saveEventArgs = new SaveEventArgs();
 
-    const string global = "Global";
-    const string Key = "SA23hg#c";
-    const string IV = ")s%6gI91";
+    // Requires packages:
+    // https://github.com/Lazy-Solutions/Unity.CoroutineUtility
+    // *included in ASM
 
-    //Set the slot, so you don't have to specify it every time.
-    public static int Slot { get; set; } = 0;
-    #endregion
-
-    #region Events
-    public static event Action<SaveEventArgs> OnSaveRequest;
-
-    #endregion
-
-    #region Save
-    private static bool AutoSave()
+    public static partial class SaveSystem
     {
-        OnSaveRequest?.Invoke(saveEventArgs);
-        var list = SaveEventArgs.Data;
+        #region Settings
+        private static readonly SaveEventArgs saveEventArgs = new();
 
-        foreach (var item in list)
+        const string global = "Global";
+
+        private static (byte[] Key, byte[] IV) encryption =
+            (Encoding.UTF8.GetBytes("your-32-byte-long-key-for-256b--"),
+             Encoding.UTF8.GetBytes("your-16-byte-IV1"));
+
+        // To set new key, do it before saving or yeee... 
+        public static void SetEncryption(string Key, string Iv) =>
+            encryption = (Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv));
+
+        private static string RootPath => Path.Combine(Application.persistentDataPath, Application.productName);
+
+        //Set the slot, so you don't have to specify it every time.
+        public static int Slot { get; set; } = 0;
+        #endregion
+
+        #region Events
+        public static event Action<SaveEventArgs> OnSaveRequest;
+
+        #endregion
+
+        #region Autosave
+        private static bool AutoSave()
         {
-            Save(item.Key, item.Value);
-        }
-
-        SaveEventArgs.Flush();
-        return true;
-    }
-    /// <summary>
-    /// Saves Everything connected to OnSaveRequest event.
-    /// </summary>
-    /// <returns>True if successfull save</returns>
-    public static bool QuickSave() => AutoSave();
-    /// <summary>
-    /// Saves to the current slot
-    /// </summary>
-    /// <param name="file"></param>
-    /// <param name="saveObject"></param>
-    public static void Save(string file, object saveObject) => QueueSave(file, Slot.ToString(), saveObject);
-    /// <summary>
-    /// Use This to specify slot on save.
-    /// </summary>
-    /// <param name="file"></param>
-    /// <param name="slot"></param>
-    /// <param name="saveObject"></param>
-    public static void SaveSlot(string file, int slot, object saveObject) => QueueSave(file, slot.ToString(), saveObject);
-    /// <summary>
-    /// Saves to the global scope
-    /// </summary>
-    /// <param name="file"></param>
-    /// <param name="saveObject"></param>
-    public static void SaveGlobal(string file, object saveObject) => QueueSave(file, global, saveObject);
-
-
-    private static readonly Queue<(string file, string slot, object saveObject)> queued = new Queue<(string file, string slot, object saveObject)>();
-    private static void Queue(string file, string slot, object saveObject) =>
-        queued.Enqueue((file, slot, saveObject));
-    private static void QueueSave(string file, string slot, object saveObject) =>
-        Queue(file, slot, saveObject);
-    private static void DoImmediateSave(string file, string slot, object saveObject)
-    {
-        try
-        {
-            var path = GetOrCreateFile(slot, file.Split("/"));
-            var json = JsonConvert.SerializeObject(saveObject);
-            WriteFile(path, json);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Save failed: " + e);
-        }
-    }
-
-    [RuntimeInitializeOnLoadMethod]
-    private static void Initialize() =>
-        Run();
-
-    private static GlobalCoroutine coroutine;
-    public static bool isRunning => coroutine?.isRunning ?? false;
-
-    public static void Run()
-    {
-
-        if (isRunning)
-            return;
-
-        //GlobalCoroutine.Stop() might not actually stop coroutine this frame, it'll probably run exactly one more,
-        //causing onComplete to be called after already setting new value for new coroutine, if Run() is called again.
-        //We would then lose reference to new coroutine, this check prevents that.
-        GlobalCoroutine c = null;
-        c = Coroutine().StartCoroutine(onComplete: () => { if (coroutine == c) coroutine = null; });
-        coroutine = c;
-
-        IEnumerator Coroutine()
-        {
-            while (true)
+            try
             {
-                yield return null;
-                if (queued.TryDequeue(out var item))
+                OnSaveRequest?.Invoke(saveEventArgs);
+                var list = SaveEventArgs.Data;
+
+                foreach (var item in list)
                 {
-                    DoImmediateSave(item.file, item.slot, item.saveObject);
+                    Save(item.Key, item.Value);
                 }
+
+                SaveEventArgs.Flush();
+
+                // Return true indicating the save operation was successful
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.Log($"AutoSave encountered an error: {ex.Message}");
+                return false;
+            }
+        }
+        #endregion
+
+        #region Save
+
+        /// <summary>
+        /// Saves Everything connected to OnSaveRequest event.
+        /// </summary>
+        /// <returns>True if successfull save</returns>
+        public static bool QuickSave() => AutoSave();
+        /// <summary>
+        /// Saves to the current slot
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="saveObject"></param>
+        public static void Save(string file, object saveObject) => QueueSave(file, Slot.ToString(), saveObject);
+        /// <summary>
+        /// Use This to specify slot on save.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="slot"></param>
+        /// <param name="saveObject"></param>
+        public static void SaveSlot(string file, int slot, object saveObject) => QueueSave(file, slot.ToString(), saveObject);
+        /// <summary>
+        /// Saves to the global scope
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="saveObject"></param>
+        public static void SaveGlobal(string file, object saveObject) => QueueSave(file, global, saveObject);
+
+
+        private static readonly Queue<(string file, string slot, object saveObject)> queue = new();
+        private static void Queue(string file, string slot, object saveObject) =>
+            queue.Enqueue((file, slot, saveObject));
+        private static void QueueSave(string file, string slot, object saveObject) =>
+            Queue(file, slot, saveObject);
+        private static void DoImmediateSave(string file, string slot, object saveObject)
+        {
+            try
+            {
+                var path = GetOrCreateFile(slot, file.Split("/"));
+
+                var type = saveObject.GetType();
+                var converter = ConverterRegistry.GetConverter(type);
+
+                var data = converter != null ? converter.Serialize(saveObject) : saveObject;
+                string serializedData = Convert.ToBase64String(SerializeToBase64(data));
+                WriteFile(path, serializedData);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Save failed for file: {file}, slot: {slot}. Exception: {e}");
+            }
+        }
+        private static byte[] SerializeToBase64(object saveObject)
+        {
+            using MemoryStream memoryStream = new();
+            BinaryFormatter formatter = new();
+            formatter.Serialize(memoryStream, saveObject);
+            return memoryStream.ToArray();
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void Initialize() => Run();
+
+        private static GlobalCoroutine coroutine;
+        public static bool IsRunning => coroutine?.isRunning ?? false;
+
+        public static void Run()
+        {
+            if (IsRunning)
+                return;
+
+            if (coroutine != null && coroutine.isRunning)
+            {
+                coroutine.Stop();
+            }
+
+            coroutine = Coroutine().StartCoroutine();
+
+            static IEnumerator Coroutine()
+            {
+                yield return null; // waiting a frame, just to make sure any prev coroutine is stopped.
+                while (true)
+                {
+                    yield return null;
+                    if (queue.TryDequeue(out var item))
+                    {
+                        DoImmediateSave(item.file, item.slot, item.saveObject);
+                    }
+                }
+            }
+
+        }
+
+        public static void Stop() =>
+            coroutine?.Stop();
+
+        #endregion
+
+        #region Load
+        public static T Load<T>(string address) where T : class => DoLoad<T>(address, Slot.ToString());
+        public static T LoadSlot<T>(string address, int slot) where T : class => DoLoad<T>(address, slot.ToString());
+        public static T LoadGlobal<T>(string address) where T : class => DoLoad<T>(address, global);
+        private static T DoLoad<T>(string address, string slot) where T : class
+        {
+            try
+            {
+                var path = GetOrCreateFile(slot, address.Split("/"));
+
+                var converter = ConverterRegistry.GetConverter(typeof(T));
+
+                return (T)converter.Deserialize(DeserializeFromBase64(ReadFile(path)));
+                
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Load failed: " + e);
+                return null;
             }
         }
 
-    }
-
-    public static void Stop() =>
-        coroutine?.Stop();
-
-    #endregion
-
-    #region Load
-    public static T Load<T>(string file) where T : class => DoLoad<T>(file, Slot.ToString());
-    public static T LoadSlot<T>(string file, int slot) where T : class => DoLoad<T>(file, slot.ToString());
-    public static T LoadGlobal<T>(string file) where T : class => DoLoad<T>(file, global);
-    private static T DoLoad<T>(string file, string slot) where T : class
-    {
-        try
+        private static object DeserializeFromBase64(string base64String)
         {
-            var path = GetOrCreateFile(slot, file.Split("/"));
-            return JsonConvert.DeserializeObject<T>(ReadFile(path));
+            byte[] bytes = Convert.FromBase64String(base64String);
+            using MemoryStream memoryStream = new(bytes);
+            BinaryFormatter formatter = new();
+            return formatter.Deserialize(memoryStream);
         }
-        catch (Exception e)
+
+        #endregion
+
+        #region Reset
+        /// <summary>
+        /// Resets/removes all saved data fom the current slot
+        /// </summary>
+        public static void ResetCurrent() => DoReset(GetOrCreateFolder(Slot.ToString()));
+
+        /// <summary>
+        /// Resets/removes all saved data from the Global save slot.
+        /// </summary>
+        public static void ResetGlobal() => DoReset(GetOrCreateFolder(global));
+
+        /// <summary>
+        /// Resets/removes all saved data from given slot.
+        /// </summary>
+        /// <param name="slot"></param>
+        public static void ResetSlot(int slot) => DoReset(GetOrCreateFolder(slot.ToString()));
+
+        /// <summary>
+        /// Resets/removes ALL saved data.
+        /// </summary>
+        public static void ResetAll() => DoReset(RootPath);
+
+        private static void DoReset(string path)
         {
-            Debug.LogError("Load failed: " + e);
-            return null;
+            DirectoryInfo di = new DirectoryInfo(path);
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (DirectoryInfo dir in di.GetDirectories())
+            {
+                dir.Delete(true);
+            }
         }
-    }
-    #endregion
+        #endregion
 
-    #region Reset
-    /// <summary>
-    /// Resets/removes all saved data fom the current slot
-    /// </summary>
-    public static void ResetCurrent() => DoReset(GetOrCreateFolder(Slot.ToString()));
-
-    /// <summary>
-    /// Resets/removes all saved data from the Global save slot.
-    /// </summary>
-    public static void ResetGlobal() => DoReset(GetOrCreateFolder(global));
-
-    /// <summary>
-    /// Resets/removes all saved data from given slot.
-    /// </summary>
-    /// <param name="slot"></param>
-    public static void ResetSlot(int slot) => DoReset(GetOrCreateFolder(slot.ToString()));
-
-    /// <summary>
-    /// Resets/removes ALL saved data.
-    /// </summary>
-    public static void ResetAll() => DoReset(RootPath);
-
-    private static void DoReset(string path)
-    {
-        DirectoryInfo di = new DirectoryInfo(path);
-        foreach (FileInfo file in di.GetFiles())
+        #region File management
+        private static string ReadFile(string Path)
         {
-            file.Delete();
+            using var cryptic = new AesCryptoServiceProvider();
+            cryptic.Key = encryption.Key;
+            cryptic.IV = encryption.IV;
+
+            using var fs = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.Read);
+            if (fs.Length == 0) return string.Empty;
+
+            using var cr = new CryptoStream(fs, cryptic.CreateDecryptor(), CryptoStreamMode.Read);
+            using var sr = new StreamReader(cr, Encoding.UTF8);
+
+            return sr.ReadToEnd();
         }
-        foreach (DirectoryInfo dir in di.GetDirectories())
+
+        private static void WriteFile(string Path, string data)
         {
-            dir.Delete(true);
+            if (data == string.Empty) return;
+
+            using var cryptic = new AesCryptoServiceProvider();
+            cryptic.Key = encryption.Key;
+            cryptic.IV = encryption.IV;
+
+            using var fs = new FileStream(Path, FileMode.Create, FileAccess.Write);
+
+            using var cr = new CryptoStream(fs, cryptic.CreateEncryptor(), CryptoStreamMode.Write);
+            using var sr = new StreamWriter(cr, Encoding.UTF8);
+
+            sr.WriteLine(data);
         }
-    }
-    #endregion
 
-    #region File management
-    private static string ReadFile(string Path)
+        private static string GetOrCreateFile(string slot = global, string[] category = null)
+        {
+            string folder = GetOrCreateFolder(slot, category.Take(category.Length - 1).ToArray());
+
+            string path = Path.Combine(folder, Path.Combine(category.Last())) + ".txt";
+
+            return path;
+        }
+
+        private static string GetOrCreateFolder(string slot = global, string[] category = null)
+        {
+            string categoryPath = category != null ? Path.Combine(category) : "";
+            string folder = Path.Combine(RootPath, slot, categoryPath);
+            CheckOrCreateFolders(folder);
+            return folder;
+        }
+
+
+        private static void CheckOrCreateFolders(string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+        }
+        #endregion
+
+
+    }
+    public class SaveEventArgs : EventArgs
     {
-        using var cryptic = new DESCryptoServiceProvider();
-        cryptic.Key = Encoding.UTF8.GetBytes(Key);
-        cryptic.IV = Encoding.UTF8.GetBytes(IV);
-
-        using var fs = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.Read);
-        if (fs.Length == 0) return string.Empty;
-
-        using var cr = new CryptoStream(fs, cryptic.CreateDecryptor(), CryptoStreamMode.Read);
-        using var sr = new StreamReader(cr, Encoding.UTF8);
-
-        return sr.ReadToEnd();
+        public static Dictionary<string, object> Data { get; private set; } = new Dictionary<string, object>();
+        public static void Flush() => Data.Clear();
+        public void Save(string file, object saveObject) => Data.Add(file, saveObject); //todo handle multiple of same "file"
     }
-
-    private static void WriteFile(string Path, string data)
-    {
-        if (data == string.Empty) return;
-
-        using var cryptic = new DESCryptoServiceProvider();
-        cryptic.Key = Encoding.UTF8.GetBytes(Key);
-        cryptic.IV = Encoding.UTF8.GetBytes(IV);
-
-        using var fs = new FileStream(Path, FileMode.Create, FileAccess.Write);
-
-        using var cr = new CryptoStream(fs, cryptic.CreateEncryptor(), CryptoStreamMode.Write);
-        using var sr = new StreamWriter(cr, Encoding.UTF8);
-
-        sr.WriteLine(data);
-    }
-
-    private static string GetOrCreateFile(string slot = global, string[] category = null)
-    {
-        string folder = GetOrCreateFolder(slot, category.Take(category.Length - 1).ToArray());
-
-        string path = Path.Combine(folder, Path.Combine(category.Last())) + ".txt";
-
-        return path;
-    }
-
-    private static string GetOrCreateFolder(string slot = global, string[] category = null)
-    {
-        string categoryPath = (category != null) ? Path.Combine(category) : "";
-        string folder = Path.Combine(RootPath, slot, categoryPath);
-        CheckOrCreateFolders(folder);
-        return folder;
-    }
-
-    private static string RootPath => Path.Combine(GetFolderPath(SpecialFolder.MyDocuments),
-                                         "My Games",
-                                         Application.productName);
-
-    private static void CheckOrCreateFolders(string path)
-    {
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-
-    }
-    #endregion
-
-
-}
-public class SaveEventArgs : EventArgs
-{
-    public static Dictionary<string, object> Data { get; private set; } = new Dictionary<string, object>();
-    public static void Flush() => Data.Clear();
-    public void Save(string file, object saveObject) => Data.Add(file, saveObject); //todo handle multiple of same "file"
 }
