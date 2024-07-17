@@ -5,40 +5,42 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
 
-[RequireComponent(typeof(UIDocument))]
-public class UIButtonEvent : MonoBehaviour
+namespace UIToolkitUtilities
 {
-    [SerializeField] private UIDocument document;
-
-    public List<ButtonRef> Buttons = new();
-
-    private void OnEnable()
+    [RequireComponent(typeof(UIDocument))]
+    public class UIButtonEvent : MonoBehaviour
     {
-        document = GetComponent<UIDocument>();
+        [SerializeField] private UIDocument document;
 
-        var buttons = document.rootVisualElement.Query<Button>().ToList();
+        public List<ButtonRef> Buttons = new();
 
-        if (buttons == null) return;
-
-        foreach (var button in buttons)
+        private void OnEnable()
         {
-            UnityEvent unityEvent = Buttons.First(x => x.buttonName == button.name).onClick;
+            document = GetComponent<UIDocument>();
 
-            button.RegisterCallback<ClickEvent>(x => unityEvent.Invoke());
+            var buttons = document.rootVisualElement.Query<Button>().ToList();
+
+            if (buttons == null) return;
+
+            foreach (var button in buttons)
+            {
+                UnityEvent unityEvent = Buttons.First(x => x.buttonName == button.name).onClick;
+
+                button.RegisterCallback<ClickEvent>(x => unityEvent.Invoke());
+            }
         }
-    }
 
-    [Serializable]
-    public class ButtonRef
-    {
-        public string buttonName;
-        public UnityEvent onClick;
-
-        public ButtonRef(string button)
+        [Serializable]
+        public class ButtonRef
         {
-            this.buttonName = button;
-            this.onClick = new UnityEvent();
+            public string buttonName;
+            public UnityEvent onClick;
+
+            public ButtonRef(string button)
+            {
+                this.buttonName = button;
+                this.onClick = new UnityEvent();
+            }
         }
     }
 }
-
