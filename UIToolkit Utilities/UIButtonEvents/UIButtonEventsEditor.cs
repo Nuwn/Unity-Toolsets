@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using UIToolkitUtilities;
 using UnityEditor;
 using UnityEngine.UIElements;
-using static UIButtonEvent;
+using static UIToolkitUtilities.UIButtonEvent;
 
 namespace UIToolkitUtilities
 {
