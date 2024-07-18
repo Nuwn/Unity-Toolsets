@@ -70,7 +70,7 @@ namespace UIToolkitUtilities
                     uiButtonEvent.Buttons.Add(buttonRef);
                 }
 
-                EditorGUILayout.LabelField(button.text, EditorStyles.boldLabel); // Button name as title
+                EditorGUILayout.LabelField(button.name, EditorStyles.boldLabel); // Button name as title
 
                 // Find the index of buttonRef in the Buttons list
                 int index = uiButtonEvent.Buttons.IndexOf(buttonRef);
