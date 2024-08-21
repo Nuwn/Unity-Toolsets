@@ -1,0 +1,16 @@
+.joystick {
+    position: absolute;
+    align-self: center;
+    bottom: 50px;
+    border-radius: 100%;
+    align-items:center;
+    justify-content: center;
+}
+
+.joystick_handle {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
