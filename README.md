@@ -51,5 +51,10 @@ Future plans?:
 
 But this is not on the roadmap for now.
 
+## UIToolkit Utilities
+Contains a set of functionality for Unity UIToolkit.
+
+Check readmes
+
 ## Extra
 This folder contains small extra things I use.
