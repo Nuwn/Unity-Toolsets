@@ -40,7 +40,21 @@ namespace UIToolkitUtilities
                     handle.transform.position = Vector3.zero;
             }
         }
-        public Vector2 Input { get; set; }
+
+        private int pointerIdInteracted;
+
+        Vector2 input = Vector2.zero;
+        public Vector2 Input
+        {
+            get
+            {
+                if(currentInteraction != JoystickInteraction.Moving)
+                    return Vector2.zero;
+
+                return input;
+            }
+            set => input = value;
+        }
 
         private readonly VisualElement handle;
 
@@ -95,16 +109,29 @@ namespace UIToolkitUtilities
             evt.destinationPanel.visualTree.RegisterCallback<PointerMoveEvent>(OnPointerMove, TrickleDown.TrickleDown);
         }
 
-        private void OnRootPointerUp(PointerUpEvent evt) =>
+        private void OnRootPointerUp(PointerUpEvent evt)
+        {
+            if (evt.pointerId != pointerIdInteracted) return;
             CurrentInteraction = JoystickInteraction.None;
-        private void OnPointerCancel(PointerCancelEvent evt) =>
+        }
+
+        private void OnPointerCancel(PointerCancelEvent evt)
+        {
+            if (evt.pointerId != pointerIdInteracted) return;
             CurrentInteraction = JoystickInteraction.None;
-        private void OnPointerDown(PointerDownEvent evt) =>
+        }
+
+        private void OnPointerDown(PointerDownEvent evt)
+        {
             CurrentInteraction = JoystickInteraction.Pressed;
+            pointerIdInteracted = evt.pointerId;
+        }
 
         private void OnPointerMove(PointerMoveEvent evt)
         {
             if (currentInteraction == JoystickInteraction.None) return;
+
+            if (evt.pointerId != pointerIdInteracted) return;
 
             Vector3 center = this.LocalToWorld(contentRect.center);
 
@@ -123,18 +150,15 @@ namespace UIToolkitUtilities
             {
                 // Input is within the dead zone, treat it as zero
                 currentInteraction = JoystickInteraction.Held;
-                Input = Vector2.zero;
                 return;
             }
 
             Input = new Vector2(
                 Mathf.Clamp(direction.x / Radius, -1f, 1f),
-                Mathf.Clamp(direction.y / Radius, -1f, 1f)
+                Mathf.Clamp(-direction.y / Radius, -1f, 1f)
             );
 
-            currentInteraction = Input == Vector2.zero ?
-                JoystickInteraction.Held :
-                JoystickInteraction.Moving;
+            currentInteraction = JoystickInteraction.Moving;
         }
 
     }
