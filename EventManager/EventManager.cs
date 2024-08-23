@@ -7,10 +7,10 @@ namespace LazyEvents
     /// <example>
     ///    This shows how to use it.
     /// <code>
-    ///     EventPlanner.Invoke("OnEventHappened", true);
+    ///     EventManager.Invoke("OnEventHappened", true);
     ///    
-    ///     EventPlanner.AddListner("OnEventHappened", OnEventHappened);
-    ///     EventPlanner.RemoveListner("OnEventHappened", OnEventHappened);
+    ///     EventManager.AddListner("OnEventHappened", OnEventHappened);
+    ///     EventManager.RemoveListner("OnEventHappened", OnEventHappened);
     ///     
     ///     public void OnEventHappened(object data){
     ///         var res = (bool) data;
@@ -18,13 +18,13 @@ namespace LazyEvents
     /// </code>
     /// </example>
     /// </summary>
-    public static class EventPlanner
+    public static class EventManager
     {
         public delegate void EventDelegate(object data);
         private static readonly Dictionary<string, EventDelegate> keyValuePairs = new Dictionary<string, EventDelegate>();
 
         /// <summary>
-        /// <para>EventPlanner.Invoke("OnMouseTrigger", AnyData);</para>
+        /// <para>EventManager.Invoke("OnMouseTrigger", AnyData);</para>
         /// <para>See class for full example</para>
         /// </summary>
         /// <param name="key">string: the identifier</param>
@@ -39,7 +39,7 @@ namespace LazyEvents
             return false;
         }
         /// <summary>
-        /// <para>EventPlanner.AddListner("OnMouseTrigger", OnMouseTrigger);</para>
+        /// <para>EventManager.AddListner("OnMouseTrigger", OnMouseTrigger);</para>
         /// <para>See class for full example</para>
         /// </summary>
         /// <param name="key">string: the identifier</param>
@@ -58,7 +58,7 @@ namespace LazyEvents
             }
         }
         /// <summary>
-        /// <para>EventPlanner.RemoveListner("OnMouseTrigger", OnMouseTrigger);</para>
+        /// <para>EventManager.RemoveListner("OnMouseTrigger", OnMouseTrigger);</para>
         /// <para>See class for full example</para>
         /// </summary>
         /// <param name="key">string: the identifier</param>

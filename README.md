@@ -2,8 +2,8 @@ This project contains tools frequenly used in my own projects.
 
 Some still being upgraded and improved over time.
 
-## EventPlanner
-EventPlanner allowes me to make event's more global.<br>
+## EventManager
+EventManager allowes me to make event's more global.<br>
 It has proven to be a quite valuable ally.<br>
 Only downside is key being string makes it harder to find references in VS.<br>
 But so far, benefits outweights the cost.
@@ -12,10 +12,10 @@ But so far, benefits outweights the cost.
 Example usage:
 
 ```
-EventPlanner.Invoke("OnEventHappened", true);
+EventManager.Invoke("OnEventHappened", true);
   
-EventPlanner.AddListner("OnEventHappened", OnEventHappened);
-EventPlanner.RemoveListner("OnEventHappened", OnEventHappened);
+EventManager.AddListner("OnEventHappened", OnEventHappened);
+EventManager.RemoveListner("OnEventHappened", OnEventHappened);
     
 public void OnEventHappened(object data) => res = (bool) data;
 ```
