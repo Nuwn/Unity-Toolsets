@@ -1,6 +1,13 @@
-This project contains tools frequenly used in my own projects.
 
-Some still being upgraded and improved over time.
+# WISHLIST Advanced Scene Manager
+
+Like what I do? 
+
+WISHLIST my asset! <br />
+[ADVANCED SCENE MANAGER (Affiliate)](https://assetstore.unity.com/packages/tools/utilities/advanced-scene-manager-174152?aid=1100ljPVc&pubref=gittoolsetASM) <br />
+[ADVANCED SCENE MANAGER (None Affiliate)](https://assetstore.unity.com/packages/tools/utilities/advanced-scene-manager-174152)<br />
+
+Affiliate links gives us publishers a small bonus when you aquire an asset, thank you.
 
 ## EventManager
 EventManager allowes me to make event's more global.<br>
