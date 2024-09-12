@@ -1,0 +1,64 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
+namespace Lazy.Timeline
+{
+    public static class TimelineExtensions
+    {
+        private static readonly Dictionary<PlayableDirector, Dictionary<string, Action>> triggers = new();
+
+        public static void RegisterTrigger(this PlayableDirector director, string triggerName, Action action)
+        {
+            if (director == null) return;
+
+            // Retrieve or create the dictionary for this PlayableDirector
+            if (!triggers.ContainsKey(director))
+            {
+                triggers[director] = new Dictionary<string, Action>();
+            }
+
+            // Use a different name for the local variable to avoid naming conflict
+            var directorTriggers = triggers[director];
+
+            // Register the action for the given trigger name
+            if (!directorTriggers.ContainsKey(triggerName))
+            {
+                directorTriggers[triggerName] = action;
+            }
+        }
+
+        public static void DeregisterTrigger(this PlayableDirector director, string triggerName)
+        {
+            if (director == null) return;
+
+            if (!triggers.TryGetValue(director, out var directorTriggers))
+                return;
+
+            directorTriggers.Remove(triggerName);
+        }
+
+        public static void SetTrigger(this PlayableDirector director, string triggerName)
+        {
+            if (director == null) return;
+
+            if (triggers.TryGetValue(director, out var directorTriggers) && directorTriggers.TryGetValue(triggerName, out var action))
+            {
+                action?.Invoke();
+            }
+        }
+
+        public static TimelineClip GetClip(this PlayableDirector director, Predicate<TimelineClip> predicate)
+        {
+            if (director == null || director.playableAsset is not TimelineAsset asset) return null;
+
+            // Find the first matching clip
+            return asset.GetOutputTracks()
+            .SelectMany(track => track.GetClips())
+            .FirstOrDefault(clip => predicate(clip));
+        }
+
+    }
+}
