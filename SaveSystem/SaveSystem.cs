@@ -9,6 +9,10 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
+// With ASM
+//using AdvancedSceneManager.Utility;
+
+
 namespace LazySaveSystem
 {
 
