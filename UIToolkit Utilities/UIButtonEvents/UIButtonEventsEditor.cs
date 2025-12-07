@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System.Collections.Generic;
 using UIToolkitUtilities;
 using UnityEditor;
@@ -41,7 +43,31 @@ namespace UIToolkitUtilities
             EditorGUILayout.Space(10);
 
 
+            // if no UIDocument is found, display a warning and return
+
+            if (uiDocument == null)
+            {
+                EditorGUILayout.HelpBox("No UIDocument component found on this GameObject.", MessageType.Warning);
+                EditorGUILayout.EndVertical();
+                return;
+            }
+            // if uiDocument has no rootVisualElement, display a warning and return
+            if (uiDocument.rootVisualElement == null)
+            {
+                EditorGUILayout.HelpBox("UIDocument has no rootVisualElement.", MessageType.Warning);
+                EditorGUILayout.EndVertical();
+                return;
+            }
+
             var buttons = uiDocument.rootVisualElement.Query<Button>().ToList();
+
+            // If no buttons are found, display a warning and return
+            if (buttons.Count == 0)
+            {
+                EditorGUILayout.HelpBox("No Button elements found in the UIDocument.", MessageType.Warning);
+                EditorGUILayout.EndVertical();
+                return;
+            }
 
             // Ensure uiButtonEvent.Buttons is initialized if null
             if (uiButtonEvent.Buttons == null)
@@ -94,3 +120,5 @@ namespace UIToolkitUtilities
 
     }
 }
+
+#endif
