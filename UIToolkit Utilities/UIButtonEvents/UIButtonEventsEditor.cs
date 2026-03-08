@@ -16,6 +16,8 @@ namespace UIToolkitUtilities
 
         private SerializedProperty buttonsList;
 
+        const string IgnoreClassName = "ui-button-event-ignore";
+
         private void OnEnable()
         {
             uiButtonEvent = target as UIButtonEvent;
@@ -80,6 +82,11 @@ namespace UIToolkitUtilities
             // Iterate over each button found in UIDocument
             foreach (var button in buttons)
             {
+                if (button.ClassListContains(IgnoreClassName))
+                {
+                    continue;
+                }
+                
                 if (button.name == string.Empty)
                 {
                     EditorGUILayout.LabelField($"Button \"{button.text}\" has not been named.", EditorStyles.boldLabel); // Button name as title
