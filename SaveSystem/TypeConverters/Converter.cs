@@ -2,11 +2,11 @@
 {
     public abstract class Converter<T> : IConverter
     {
-        public abstract object Serialize(T data);
-        public abstract T Deserialize(object data);
+        public abstract string Serialize(T data);
+        public abstract T Deserialize(string data);
 
-        public object Serialize(object data) => data is T typedData ? Serialize(typedData) : null;
+        public string Serialize<T1>(T1 data) => data is T typedData ? Serialize(typedData) : null;
 
-        object IConverter.Deserialize(object data) => Deserialize(data);
+        public T1 Deserialize<T1>(string data) => Deserialize<T1>(data);
     }
 }

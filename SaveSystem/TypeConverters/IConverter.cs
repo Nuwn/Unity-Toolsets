@@ -1,5 +1,8 @@
-﻿public interface IConverter
+﻿namespace LazySaveSystem
 {
-    object Serialize(object data);
-    object Deserialize(object data);
+    public interface IConverter
+    {
+        string Serialize<T>(T data);
+        T Deserialize<T>(string data);
+    }
 }

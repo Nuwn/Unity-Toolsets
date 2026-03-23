@@ -1,23 +1,23 @@
-using LazySaveSystem;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public static class ConverterRegistry
+namespace LazySaveSystem
 {
-    private static readonly Dictionary<Type, IConverter> converters = new()
-        {
-            { typeof(Texture2D), new Texture2DConverter() }
-        };
-
-    public static IConverter GetConverter(Type type)
+    public static class ConverterRegistry
     {
-        if (converters.TryGetValue(type, out var converter))
-        {
-            return converter;
-        }
+        private static readonly Dictionary<Type, IConverter> converters = new()
+            {
+            };
 
-        Debug.Log($"No converter registered for type {type.FullName}");
-        return null;
+        public static IConverter GetConverter(Type type)
+        {
+            if (converters.TryGetValue(type, out var converter))
+            {
+                return converter;
+            }
+
+            return new DefaultConverter();
+        }
     }
 }
