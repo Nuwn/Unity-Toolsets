@@ -2,18 +2,24 @@
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
+    public static T Instance { get; private set; }
 
-    public static T Instance { get; protected set; }
-
-    public Singleton()
+    protected virtual void Awake()
     {
-        Instance = (T)(object)this;
+        // Enforce single instance
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning($"Another instance of {typeof(T)} already exists! Destroying duplicate.");
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this as T;
     }
 
-    public virtual void OnDestroy()
+    protected virtual void OnDestroy()
     {
         if (Instance == this)
             Instance = null;
     }
-
 }
