@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Toolset.ECS;
 using Unity.Entities;
 
 public struct PlayStateTag : IGameState { }

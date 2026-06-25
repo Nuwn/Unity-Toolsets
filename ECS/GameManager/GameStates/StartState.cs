@@ -1,7 +1,10 @@
 using System.Collections;
+using Toolset.ECS;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+
 
 public struct StartStateTag : IGameState { }
 
@@ -14,7 +17,7 @@ public class StartState : GameState
 
     public override IEnumerator Enter()
     {
-        countdown = MainMenuManager.Instance.Countdown;
+        //countdown = MainMenuManager.Instance.Countdown;
         text = countdown.Q<Label>("CountdownLabel");
         text.text = time.ToString("0");
 

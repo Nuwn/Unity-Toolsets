@@ -1,16 +1,19 @@
 using Unity.Entities;
 using UnityEngine;
 
-public class EnemyAuthoring : MonoBehaviour{
-    public EnemyTypeEnum EnemyType;
-}
-
-public partial class EnemyBaker : Baker<EnemyAuthoring>
+namespace Toolset.ECS
 {
-    public override void Bake(EnemyAuthoring authoring)
+    public class EnemyAuthoring : MonoBehaviour{
+        public EnemyTypeEnum EnemyType;
+    }
+
+    public partial class EnemyBaker : Baker<EnemyAuthoring>
     {
-        var entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent<EnemyTag>(entity);
-        AddComponent(entity, new EnemyTypeComponent { EnemyType = (int)authoring.EnemyType });
+        public override void Bake(EnemyAuthoring authoring)
+        {
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent<EnemyTag>(entity);
+            AddComponent(entity, new EnemyTypeComponent { EnemyType = (int)authoring.EnemyType });
+        }
     }
 }

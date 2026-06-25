@@ -1,28 +1,31 @@
 using Unity.Collections;
 using Unity.Entities;
 
-[UpdateInGroup(typeof(PoolingSystemGroup))]
-[UpdateAfter(typeof(PoolInitializeSystem))]
-public partial struct PoolDespawnSystem : ISystem
+namespace Toolset.ECS
 {
-    public readonly void OnCreate(ref SystemState state) => 
-        state.RequireForUpdate<PoolingSingleton>();
-
-    public void OnUpdate(ref SystemState state)
+    [UpdateInGroup(typeof(PoolingSystemGroup))]
+    [UpdateAfter(typeof(PoolInitializeSystem))]
+    public partial struct PoolDespawnSystem : ISystem
     {
-        var singleton = SystemAPI.GetSingletonEntity<PoolingSingleton>();
-        var ecb = new EntityCommandBuffer(Allocator.TempJob);
-        var elapsedTime = SystemAPI.Time.ElapsedTime;
+        public readonly void OnCreate(ref SystemState state) =>
+            state.RequireForUpdate<PoolingSingleton>();
 
-        foreach (var (_, entity) in SystemAPI.Query<RefRO<DeactivateEntityTag>>().WithEntityAccess())
+        public void OnUpdate(ref SystemState state)
         {
-            // Deactivate and return to pool
-            ecb.RemoveComponent<ActiveTag>(entity);
-            ecb.RemoveComponent<DeactivateEntityTag>(entity);
-            state.EntityManager.GetBuffer<AvailableEntity>(singleton).Add(new AvailableEntity { Entity = entity, registrationTime = elapsedTime });
-        }
+            var singleton = SystemAPI.GetSingletonEntity<PoolingSingleton>();
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
+            var elapsedTime = SystemAPI.Time.ElapsedTime;
 
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
+            foreach (var (_, entity) in SystemAPI.Query<RefRO<DeactivateEntityTag>>().WithEntityAccess())
+            {
+                // Deactivate and return to pool
+                ecb.RemoveComponent<ActiveTag>(entity);
+                ecb.RemoveComponent<DeactivateEntityTag>(entity);
+                state.EntityManager.GetBuffer<AvailableEntity>(singleton).Add(new AvailableEntity { Entity = entity, registrationTime = elapsedTime });
+            }
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using Toolset.ECS;
 using Unity.Entities;
 
 public struct GameOverStateTag : IGameState { }

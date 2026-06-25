@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Toolset.ECS;
 using Unity.Entities;
 
 public struct PauseStateTag : IGameState { }
@@ -8,13 +9,13 @@ internal class PauseState : GameState
 {
     public override IEnumerator Enter()
     {
-        MainMenuManager.Instance.pausePanel.Show();
+        //MainMenuManager.Instance.pausePanel.Show();
         yield break;
     }
 
     public override IEnumerator Exit()
     {
-        MainMenuManager.Instance.pausePanel.Hide();
+        //MainMenuManager.Instance.pausePanel.Hide();
         yield break;
     }
 

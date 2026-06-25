@@ -1,0 +1,20 @@
+{
+    "name": "Toolsets.Input.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:00c34a1c26bc6d84f81d89800588577b",
+        "GUID:34fe5fb1d8380dd44afd5e1053bf12cb",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

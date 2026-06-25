@@ -1,40 +1,43 @@
 ﻿using Unity.Burst;
 using Unity.Entities;
 
-public struct TimeTick : IComponentData
+namespace Toolset.ECS
 {
-    public uint Tick;
-}
-
-[BurstCompile]
-[UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
-public partial struct TimeSystem : ISystem
-{
-    [BurstCompile]
-    public readonly void OnCreate(ref SystemState state)
+    public struct TimeTick : IComponentData
     {
-        var entity = state.EntityManager.CreateSingleton(new TimeTick { Tick = 0 });
+        public uint Tick;
+    }
+
+    [BurstCompile]
+    [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
+    public partial struct TimeSystem : ISystem
+    {
+        [BurstCompile]
+        public readonly void OnCreate(ref SystemState state)
+        {
+            var entity = state.EntityManager.CreateSingleton(new TimeTick { Tick = 0 });
 
 #if UNITY_EDITOR
-        state.EntityManager.SetName(entity, "TimeTickEntity");
+            state.EntityManager.SetName(entity, "TimeTickEntity");
 #endif
-    }
+        }
 
-    [BurstCompile]
-    public readonly void OnDestroy(ref SystemState state)
-    {
-        if (!SystemAPI.HasSingleton<TimeTick>()) return;
-
-        Entity tickEntity = SystemAPI.GetSingletonEntity<TimeTick>();
-        state.EntityManager.DestroyEntity(tickEntity);
-    }
-
-    [BurstCompile]
-    public readonly void OnUpdate(ref SystemState state)
-    {
-        foreach (var timeTick in SystemAPI.Query<RefRW<TimeTick>>())
+        [BurstCompile]
+        public readonly void OnDestroy(ref SystemState state)
         {
-            timeTick.ValueRW.Tick++;
+            if (!SystemAPI.HasSingleton<TimeTick>()) return;
+
+            Entity tickEntity = SystemAPI.GetSingletonEntity<TimeTick>();
+            state.EntityManager.DestroyEntity(tickEntity);
+        }
+
+        [BurstCompile]
+        public readonly void OnUpdate(ref SystemState state)
+        {
+            foreach (var timeTick in SystemAPI.Query<RefRW<TimeTick>>())
+            {
+                timeTick.ValueRW.Tick++;
+            }
         }
     }
 }
