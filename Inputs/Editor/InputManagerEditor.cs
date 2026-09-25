@@ -39,12 +39,24 @@ namespace Toolsets.Input.Editor
             sb.AppendLine("// Generated on: " + System.DateTime.Now);
             sb.AppendLine("// </auto-generated>");
             sb.AppendLine();
+            sb.AppendLine("using System;");
             sb.AppendLine("using UnityEngine;");
             sb.AppendLine("using Toolsets.Input;");
             sb.AppendLine();
             sb.AppendLine("public static class Inputs");
             sb.AppendLine("{");
-            sb.AppendLine("    private static InputManager Instance => InputManager.Instance;");
+            sb.AppendLine("    private static InputManager s_manager;");
+            sb.AppendLine();
+            sb.AppendLine("    private static T Resolve<T>(ref T field, Func<InputManager, T> resolver) where T : class");
+            sb.AppendLine("    {");
+            sb.AppendLine("        var manager = InputManager.Instance;");
+            sb.AppendLine("        if (manager != s_manager || field == null)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            s_manager = manager;");
+            sb.AppendLine("            field = manager != null ? resolver(manager) : null;");
+            sb.AppendLine("        }");
+            sb.AppendLine("        return field;");
+            sb.AppendLine("    }");
             sb.AppendLine();
 
             sb.AppendLine("    #region Buttons");
@@ -52,7 +64,9 @@ namespace Toolsets.Input.Editor
             {
                 if (button.reference?.action == null) continue;
                 var name = CleanName(button.reference.action.name);
-                sb.AppendLine($"    public static InputButton {name} => Instance.GetButton(\"{button.reference.action.name}\");");
+                var fieldName = $"s_{name}";
+                sb.AppendLine($"    private static InputButton {fieldName};");
+                sb.AppendLine($"    public static InputButton {name} => Resolve(ref {fieldName}, manager => manager.GetButton(\"{button.reference.action.name}\"));");
             }
             sb.AppendLine("    #endregion");
             sb.AppendLine();
@@ -62,7 +76,9 @@ namespace Toolsets.Input.Editor
             {
                 if (val.reference?.action == null) continue;
                 var name = CleanName(val.reference.action.name);
-                sb.AppendLine($"    public static InputFloat {name} => Instance.GetFloat(\"{val.reference.action.name}\");");
+                var fieldName = $"s_{name}";
+                sb.AppendLine($"    private static InputFloat {fieldName};");
+                sb.AppendLine($"    public static InputFloat {name} => Resolve(ref {fieldName}, manager => manager.GetFloat(\"{val.reference.action.name}\"));");
             }
             sb.AppendLine("    #endregion");
             sb.AppendLine();
@@ -72,7 +88,9 @@ namespace Toolsets.Input.Editor
             {
                 if (val.reference?.action == null) continue;
                 var name = CleanName(val.reference.action.name);
-                sb.AppendLine($"    public static InputVector2 {name} => Instance.GetVector2(\"{val.reference.action.name}\");");
+                var fieldName = $"s_{name}";
+                sb.AppendLine($"    private static InputVector2 {fieldName};");
+                sb.AppendLine($"    public static InputVector2 {name} => Resolve(ref {fieldName}, manager => manager.GetVector2(\"{val.reference.action.name}\"));");
             }
             sb.AppendLine("    #endregion");
 
@@ -83,7 +101,6 @@ namespace Toolsets.Input.Editor
             File.WriteAllText(path, sb.ToString());
 
             AssetDatabase.Refresh();
-            EditorUtility.DisplayDialog("Success!", $"Inputs class generated at:\n{path}", "OK");
         }
 
         private static string CleanName(string name)

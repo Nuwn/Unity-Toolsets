@@ -44,6 +44,10 @@ namespace Toolsets.Input
         [SerializeField] internal List<InputFloat> floatValues = new();
         [SerializeField] internal List<InputVector2> vector2Values = new();
 
+        private readonly Dictionary<string, InputButton> buttonLookup = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, InputFloat> floatLookup = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, InputVector2> vector2Lookup = new(StringComparer.OrdinalIgnoreCase);
+
         #region Active Device
 
         public ActiveDevice activeDevice = new();
@@ -56,17 +60,59 @@ namespace Toolsets.Input
 
         #region Getters
 
-        public InputButton GetButton(string actionName) => buttons.Find(b =>
-            b.reference?.action != null &&
-            string.Equals(b.reference.action.name, actionName, StringComparison.OrdinalIgnoreCase));
+        public InputButton GetButton(string actionName)
+        {
+            EnsureLookupIsBuilt();
+            return string.IsNullOrEmpty(actionName) ? null : buttonLookup.TryGetValue(actionName, out var button) ? button : null;
+        }
 
-        public InputFloat GetFloat(string actionName) => floatValues.Find(v =>
-            v.reference?.action != null &&
-            string.Equals(v.reference.action.name, actionName, StringComparison.OrdinalIgnoreCase));
+        public InputFloat GetFloat(string actionName)
+        {
+            EnsureLookupIsBuilt();
+            return string.IsNullOrEmpty(actionName) ? null : floatLookup.TryGetValue(actionName, out var value) ? value : null;
+        }
 
-        public InputVector2 GetVector2(string actionName) => vector2Values.Find(v =>
-            v.reference?.action != null &&
-            string.Equals(v.reference.action.name, actionName, StringComparison.OrdinalIgnoreCase));
+        public InputVector2 GetVector2(string actionName)
+        {
+            EnsureLookupIsBuilt();
+            return string.IsNullOrEmpty(actionName) ? null : vector2Lookup.TryGetValue(actionName, out var value) ? value : null;
+        }
+
+        private void EnsureLookupIsBuilt()
+        {
+            if (buttonLookup.Count == buttons.Count &&
+                floatLookup.Count == floatValues.Count &&
+                vector2Lookup.Count == vector2Values.Count)
+            {
+                return;
+            }
+
+            RebuildLookups();
+        }
+
+        private void RebuildLookups()
+        {
+            buttonLookup.Clear();
+            foreach (var button in buttons)
+            {
+                if (button?.reference?.action == null) continue;
+                buttonLookup[button.reference.action.name] = button;
+            }
+
+            floatLookup.Clear();
+            foreach (var value in floatValues)
+            {
+                if (value?.reference?.action == null) continue;
+                floatLookup[value.reference.action.name] = value;
+            }
+
+            vector2Lookup.Clear();
+            foreach (var value in vector2Values)
+            {
+                if (value?.reference?.action == null) continue;
+                vector2Lookup[value.reference.action.name] = value;
+            }
+        }
 
         #endregion
 
@@ -75,6 +121,8 @@ namespace Toolsets.Input
         protected override void Awake()
         {
             base.Awake();
+
+            RebuildLookups();
 
             if (inputActions != null)
                 inputActions.Enable();
