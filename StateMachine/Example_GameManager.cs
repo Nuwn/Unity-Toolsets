@@ -32,7 +32,7 @@ namespace Toolset.StateMachine
 
     }
 
-    public abstract class GameState : IState {
+    public abstract partial class GameState : IState {
 
         public object Owner { get; set; }
 

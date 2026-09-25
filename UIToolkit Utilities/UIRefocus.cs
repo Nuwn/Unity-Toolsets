@@ -4,7 +4,7 @@ using System; // for the static event
 using Unity.Scripting.LifecycleManagement;
 
 [RequireComponent(typeof(UIDocument))]
-public class UIRefocus : MonoBehaviour
+public partial class UIRefocus : MonoBehaviour
 {
     private UIDocument uIDocument;
 

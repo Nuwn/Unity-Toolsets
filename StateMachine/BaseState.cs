@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Toolset.StateMachine
 {
-    public abstract class BaseState : IState
+    public abstract partial class BaseState : IState
     {
         [AutoStaticsCleanup]
         protected static Dictionary<Type, IState> states = new();

@@ -14,8 +14,6 @@ namespace LazySaveSystem
     public static partial class SaveSystem
     {
         #region Settings
-        private static readonly SaveEventArgs saveEventArgs = new();
-
         const string global = "Global";
 
         private static (byte[] Key, byte[] IV) encryption =
@@ -49,7 +47,7 @@ namespace LazySaveSystem
         {
             try
             {
-                OnSaveRequest?.Invoke(saveEventArgs);
+                OnSaveRequest?.Invoke(new SaveEventArgs());
                 var list = SaveEventArgs.Data;
 
                 foreach (var item in list)
@@ -236,7 +234,7 @@ namespace LazySaveSystem
         #endregion
     }
 
-    public class SaveEventArgs : EventArgs
+    public partial class SaveEventArgs : EventArgs
     {
         [AutoStaticsCleanup]
         public static Dictionary<string, object> Data { get; private set; } = new();

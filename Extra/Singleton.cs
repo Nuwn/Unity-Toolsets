@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Scripting.LifecycleManagement;
 
-public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public abstract partial class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     [AutoStaticsCleanup]
     public static T Instance { get; private set; }

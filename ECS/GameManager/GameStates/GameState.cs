@@ -10,7 +10,7 @@ namespace Toolset.ECS
 {
     public interface IGameState : IComponentData, IEnableableComponent { }
 
-    public abstract class GameState
+    public abstract partial class GameState
     {
         [AutoStaticsCleanup]
         protected static Dictionary<Type, GameState> states = new();
