@@ -37,7 +37,7 @@ namespace UIToolkitUtilities
                 currentInteraction = value;
 
                 if (value == JoystickInteraction.None)
-                    handle.transform.position = Vector3.zero;
+                    handle.style.translate = new Translate(0, 0);
             }
         }
 
@@ -48,7 +48,7 @@ namespace UIToolkitUtilities
         {
             get
             {
-                if(currentInteraction != JoystickInteraction.Moving)
+                if (currentInteraction != JoystickInteraction.Moving)
                     return Vector2.zero;
 
                 return input;
@@ -143,8 +143,7 @@ namespace UIToolkitUtilities
 
             Vector3 clampedPosition = direction.normalized * clampedDistance;
 
-            handle.transform.position = clampedPosition;
-
+            handle.style.translate = new Translate(clampedPosition.x, clampedPosition.y);
 
             if (distance < DeadZone * Radius)
             {

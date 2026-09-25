@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using System; // for the static event
+using Unity.Scripting.LifecycleManagement;
 
 [RequireComponent(typeof(UIDocument))]
 public class UIRefocus : MonoBehaviour
 {
     private UIDocument uIDocument;
 
+    [AutoStaticsCleanup]
     public static event Action OnRefocus;
     public static void Refocus() => OnRefocus?.Invoke();
 

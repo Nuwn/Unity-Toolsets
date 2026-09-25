@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 
 namespace LazySaveSystem
 {
-    public static class ConverterRegistry
+    [AutoStaticsCleanup]
+    public static partial class ConverterRegistry
     {
-        private static readonly Dictionary<Type, IConverter> converters = new()
-            {
-            };
+        private static readonly Dictionary<Type, IConverter> converters = new() {};
 
         public static IConverter GetConverter(Type type)
         {

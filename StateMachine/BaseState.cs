@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 
 namespace Toolset.StateMachine
 {
     public abstract class BaseState : IState
     {
+        [AutoStaticsCleanup]
         protected static Dictionary<Type, IState> states = new();
 
         public object Owner { get; set; }

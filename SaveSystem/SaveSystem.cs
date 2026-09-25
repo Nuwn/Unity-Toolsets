@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEditor;
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 
 namespace LazySaveSystem
 {
+    [AutoStaticsCleanup]
     public static partial class SaveSystem
     {
         #region Settings
@@ -24,21 +25,18 @@ namespace LazySaveSystem
         public static void SetEncryption(string Key, string Iv) =>
             encryption = (Encoding.UTF8.GetBytes(Key), Encoding.UTF8.GetBytes(Iv));
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        private static string RootPath => Path.Combine(Application.persistentDataPath, Application.productName, "Development");
-#else
-        private static string RootPath => Path.Combine(Application.persistentDataPath, Application.productName);
-#endif
+        private static bool IsDevelopment =>
+            Application.isEditor || Debug.isDebugBuild;
 
+        private static string RootPath =>
+            Path.Combine(
+            Application.persistentDataPath,
+            Application.productName,
+            IsDevelopment ? "Development" : string.Empty);
 
         public static int Slot { get; set; } = 0;
 
-        private static bool UseEncryption =>
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            false;
-#else
-            true;
-#endif
+        private static bool UseEncryption => !IsDevelopment;
 
         #endregion
 
@@ -98,13 +96,6 @@ namespace LazySaveSystem
             }
         }
 
-        internal static byte[] SerializeToBase64(object saveObject)
-        {
-            using MemoryStream memoryStream = new();
-            BinaryFormatter formatter = new();
-            formatter.Serialize(memoryStream, saveObject);
-            return memoryStream.ToArray();
-        }
         #endregion
 
         #region Load
@@ -118,8 +109,12 @@ namespace LazySaveSystem
             {
                 var path = GetOrCreateFile(slot, address.Split("/"));
                 var converter = ConverterRegistry.GetConverter(typeof(T));
+                var data = ReadFile(path);
 
-                return (T)converter.Deserialize<T>(ReadFile(path));
+                if (string.IsNullOrEmpty(data))
+                    return null;
+
+                return (T)converter.Deserialize<T>(data);
             }
             catch (Exception e)
             {
@@ -128,15 +123,6 @@ namespace LazySaveSystem
             }
         }
 
-        internal static object DeserializeFromBase64(string base64String)
-        {
-            if (base64String.Length == 0) return null;
-
-            byte[] bytes = Convert.FromBase64String(base64String);
-            using MemoryStream memoryStream = new(bytes);
-            BinaryFormatter formatter = new();
-            return formatter.Deserialize(memoryStream);
-        }
         #endregion
 
         #region Reset
@@ -252,6 +238,7 @@ namespace LazySaveSystem
 
     public class SaveEventArgs : EventArgs
     {
+        [AutoStaticsCleanup]
         public static Dictionary<string, object> Data { get; private set; } = new();
         public static void Flush() => Data.Clear();
         public void Save(string file, object saveObject) => Data.Add(file, saveObject);

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 
 namespace Toolset.StateMachine
@@ -41,6 +42,7 @@ namespace Toolset.StateMachine
 
         public virtual Awaitable Exit(){ return null; }
 
+        [AutoStaticsCleanup]
         protected static Dictionary<Type, GameState> states = new();
 
         public static T GetOrCreate<T>() where T : GameState, new()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
+using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
 
 namespace Toolset.ECS
@@ -11,6 +12,7 @@ namespace Toolset.ECS
 
     public abstract class GameState
     {
+        [AutoStaticsCleanup]
         protected static Dictionary<Type, GameState> states = new();
 
         public static T GetOrCreate<T>() where T : GameState, new()

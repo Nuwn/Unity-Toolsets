@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Scripting.LifecycleManagement;
 
 namespace Lazy.Events
 {
@@ -17,7 +18,8 @@ namespace Lazy.Events
 	/// </code>
 	/// </example>
 	/// </summary>
-	public static class EventManager
+	[AutoStaticsCleanup]
+	public static partial class EventManager
 	{
 		public delegate void EventDelegate(object data);
 		private static readonly Dictionary<string, EventDelegate> keyValuePairs = new Dictionary<string, EventDelegate>();

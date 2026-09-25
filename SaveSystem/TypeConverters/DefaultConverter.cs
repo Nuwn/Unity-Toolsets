@@ -1,4 +1,4 @@
-using System;
+using UnityEngine;
 
 namespace LazySaveSystem
 {
@@ -6,12 +6,12 @@ namespace LazySaveSystem
     {
         public string Serialize<T>(T data)
         {
-            return Convert.ToBase64String(SaveSystem.SerializeToBase64(data));
+            return JsonUtility.ToJson(data);
         }
 
         public T Deserialize<T>(string data)
         {
-            return (T)SaveSystem.DeserializeFromBase64(data);
+            return JsonUtility.FromJson<T>(data);
         }
     }
 }
