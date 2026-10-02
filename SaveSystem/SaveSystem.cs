@@ -4,9 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using UnityEditor;
 using Unity.Scripting.LifecycleManagement;
 using UnityEngine;
+
+// Player builds compile runtime assemblies without UnityEditor, so this stays guarded.
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace LazySaveSystem
 {
@@ -51,7 +55,7 @@ namespace LazySaveSystem
                 var list = SaveEventArgs.Data;
 
                 foreach (var item in list)
-                    Save(item.Key, item.Value);   // Now truly immediate
+                    DoSave(item.Value.Type, item.Key, Slot.ToString(), item.Value.Value);   // Now truly immediate
 
                 SaveEventArgs.Flush();
                 return true;
@@ -67,22 +71,21 @@ namespace LazySaveSystem
         #region Save (NOW IMMEDIATE - no coroutine, no queue)
         public static bool QuickSave() => AutoSave();
 
-        public static void Save(string file, object saveObject)
-            => DoSave(file, Slot.ToString(), saveObject);
+        public static void Save<T>(string file, T saveObject) where T : class
+            => DoSave(typeof(T), file, Slot.ToString(), saveObject);
 
-        public static void SaveSlot(string file, int slot, object saveObject)
-            => DoSave(file, slot.ToString(), saveObject);
+        public static void SaveSlot<T>(string file, int slot, T saveObject) where T : class
+            => DoSave(typeof(T), file, slot.ToString(), saveObject);
 
-        public static void SaveGlobal(string file, object saveObject)
-            => DoSave(file, global, saveObject);
+        public static void SaveGlobal<T>(string file, T saveObject) where T : class
+            => DoSave(typeof(T), file, global, saveObject);
 
-        private static void DoSave(string file, string slot, object saveObject)
+        private static void DoSave(Type type, string file, string slot, object saveObject)
         {
             try
             {
                 var path = GetOrCreateFile(slot, file.Split("/"));
 
-                var type = saveObject.GetType();
                 var converter = ConverterRegistry.GetConverter(type);
                 var data = converter.Serialize(saveObject);
 
@@ -237,13 +240,28 @@ namespace LazySaveSystem
     public partial class SaveEventArgs : EventArgs
     {
         [AutoStaticsCleanup]
-        public static Dictionary<string, object> Data { get; private set; } = new();
+        public static Dictionary<string, SaveRequest> Data { get; private set; } = new();
         public static void Flush() => Data.Clear();
-        public void Save(string file, object saveObject) => Data.Add(file, saveObject);
+        public void Save<T>(string file, T saveObject) where T : class => Data.Add(file, new SaveRequest(typeof(T), saveObject));
+    }
+
+    /// <summary>
+    /// A queued save, keeping the declared type alongside the value so the converter that
+    /// writes the file is the same one <see cref="SaveSystem.Load{T}"/> will read it with.
+    /// </summary>
+    public readonly struct SaveRequest
+    {
+        public readonly Type Type;
+        public readonly object Value;
+
+        public SaveRequest(Type type, object value)
+        {
+            Type = type;
+            Value = value;
+        }
     }
 
 #if UNITY_EDITOR
-
     public static class LazySaveSystemEditor
     {
         [MenuItem("Tools/Lazy Save System/Open Save Folder")]

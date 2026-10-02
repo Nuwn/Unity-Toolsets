@@ -23,7 +23,7 @@ namespace Toolsets.Input
 
         private void RegisterButton(InputActionReference actionRef, Action<bool> setHeld)
         {
-            if (actionRef != null || actionRef.action == null) return;
+            if (actionRef == null || actionRef.action == null) return;
 
             actionRef.action.started += ctx => setHeld(true);
             actionRef.action.canceled += ctx => setHeld(false);
